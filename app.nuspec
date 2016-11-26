@@ -24,6 +24,6 @@
     <tags>Latipium Development Non-Mod</tags>
   </metadata>
   <files>
-    <file src="bin/{{ configuration }}/Com.Latipium.Daemon.dll" target="lib/net45" />
+    <file src="bin/{{ configuration }}/Com.Latipium.Daemon.exe" target="bin" />
   </files>
 </package>
