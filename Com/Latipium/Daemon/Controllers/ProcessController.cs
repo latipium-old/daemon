@@ -31,13 +31,23 @@ using System.Web.Http;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Controllers {
+    /// <summary>
+    /// Process controller.
+    /// </summary>
     public class ProcessController : ApiController {
         private static Dictionary<int, LaunchedProcess> Processes;
 
+        /// <summary>
+        /// Performs the get request.
+        /// </summary>
         public IEnumerable<int> Get() {
             return Processes.Keys;
         }
 
+        /// <summary>
+        /// Performs the get request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public ProcessData Get(int id) {
             if (Processes.ContainsKey(id)) {
                 return Processes[id].Data;
@@ -46,6 +56,10 @@ namespace Com.Latipium.Daemon.Controllers {
             }
         }
 
+        /// <summary>
+        /// Performs the post request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public ProcessData Post(int id) {
             if (Processes.ContainsKey(id)) {
                 Task<Stream> task = Request.Content.ReadAsStreamAsync();
@@ -57,6 +71,11 @@ namespace Com.Latipium.Daemon.Controllers {
             }
         }
 
+        /// <summary>
+        /// Performs the put request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
+        /// <param name="info">Info.</param>
         public ProcessData Put(int id, ProcessInformation info) {
             if (Processes.ContainsKey(id)) {
                 Delete(id);
@@ -66,6 +85,10 @@ namespace Com.Latipium.Daemon.Controllers {
             return proc.Data;
         }
 
+        /// <summary>
+        /// Performs the delete request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public ProcessData Delete(int id) {
             if (Processes.ContainsKey(id)) {
                 Processes[id].Kill();

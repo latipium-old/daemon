@@ -28,11 +28,12 @@ using System.Linq;
 using System.Net.Http;
 
 namespace Com.Latipium.Daemon.Controllers {
-    public static class ControllerExtensions {
+    internal static class ControllerExtensions {
         private static readonly string[] AuthorizedHosts = new [] {
             "latipium.com",
             "www.latipium.com",
-            "localhost"
+            "localhost",
+            "latipium-test"
         };
 
         public static string ExpandParameter(this string s) {

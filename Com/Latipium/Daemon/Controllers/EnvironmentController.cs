@@ -28,8 +28,14 @@ using System.Web.Http;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Controllers {
+    /// <summary>
+    /// Environment controller.
+    /// </summary>
     public class EnvironmentController : ApiController {
-        public EnvironmentObject Get(string id) {
+        /// <summary>
+        /// Performs the get request.
+        /// </summary>
+        public EnvironmentObject Get() {
             Request.Check();
             return new EnvironmentObject();
         }

@@ -31,19 +31,37 @@ using System.Web.Http;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Controllers {
+    /// <summary>
+    /// File controller.
+    /// </summary>
     public class FileController : ApiController {
+        /// <summary>
+        /// Performs the get request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public FileObject Get(string id) {
             Request.Check();
-            return new FileObject(id.ExpandParameter());
+            FileObject obj = new FileObject(id.ExpandParameter());
+            if (Request.RequestUri.Query.Contains("empty")) {
+                obj.Contents = null;
+            }
+            return obj;
         }
 
+        /// <summary>
+        /// Performs the post request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public FileObject Post(string id) {
             Request.Check();
             Task<string> task = Request.Content.ReadAsStringAsync();
             task.Wait();
-            HttpWebRequest req = WebRequest.CreateHttp(task.Result);
-            req.AllowAutoRedirect = true;
-            req.UserAgent = "Latipium Launcher Daemon (https://github.com/latipium/daemon)";
+            WebRequest req = WebRequest.Create(task.Result);
+            if (req is HttpWebRequest) {
+                HttpWebRequest http = (HttpWebRequest) req;
+                http.AllowAutoRedirect = true;
+                http.UserAgent = "Latipium Launcher Daemon (https://github.com/latipium/daemon)";
+            }
             using (WebResponse res = req.GetResponse()) {
                 using (Stream net = res.GetResponseStream()) {
                     using (FileStream file = new FileStream(id.ExpandParameter(), FileMode.Create, FileAccess.Write)) {
@@ -54,6 +72,10 @@ namespace Com.Latipium.Daemon.Controllers {
             return Get(id);
         }
 
+        /// <summary>
+        /// Performs the put request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public FileObject Put(string id) {
             Request.Check();
             using (FileStream stream = File.Open(id.ExpandParameter(), FileMode.Create, FileAccess.Write)) {
@@ -62,6 +84,10 @@ namespace Com.Latipium.Daemon.Controllers {
             return Get(id);
         }
 
+        /// <summary>
+        /// Performs the delete request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public FileObject Delete(string id) {
             Request.Check();
             File.Delete(id.ExpandParameter());

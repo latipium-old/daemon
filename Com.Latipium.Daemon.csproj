@@ -70,6 +70,10 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="System.Web.Http.Tracing">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Tracing.5.2.3\lib\net45\System.Web.Http.Tracing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +95,8 @@
     <Compile Include="Com\Latipium\Daemon\Model\ProcessData.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\ProcessController.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\LaunchedProcess.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\VersionController.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\NetworkController.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

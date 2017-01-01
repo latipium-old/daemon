@@ -28,12 +28,30 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Com.Latipium.Daemon.Model {
+    /// <summary>
+    /// Environment object.
+    /// </summary>
     public class EnvironmentObject {
+        /// <summary>
+        /// The OS.
+        /// </summary>
         public string OS;
+        /// <summary>
+        /// The variables.
+        /// </summary>
         public IDictionary Variables;
+        /// <summary>
+        /// The is64 bit.
+        /// </summary>
         public bool Is64Bit;
+        /// <summary>
+        /// The special folders.
+        /// </summary>
         public Dictionary<string, string> SpecialFolders;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.Model.EnvironmentObject"/> class.
+        /// </summary>
         public EnvironmentObject() {
             try {
             switch (Environment.OSVersion.Platform) {

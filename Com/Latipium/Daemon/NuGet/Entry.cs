@@ -29,6 +29,9 @@ using System.Threading;
 using Microsoft.Owin.Hosting;
 
 namespace Com.Latipium.Daemon.NuGet {
+    /// <summary>
+    /// Entry.
+    /// </summary>
     public static class Entry {
         private static string Dir {
             get {
@@ -69,6 +72,10 @@ namespace Com.Latipium.Daemon.NuGet {
             return true;
         }
 
+        /// <summary>
+        /// The entry point of the program, where the program control starts and ends.
+        /// </summary>
+        /// <param name="args">The command-line arguments.</param>
         public static void Main(string[] args) {
             LatipiumLoader loader = new LatipiumLoader();
             if (loader.IsEnvironmentReady) {

@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Controllers {
-    public class LaunchedProcess {
+    internal class LaunchedProcess {
         private Process Proc;
         private Stream StdIn;
         private StreamReader StdOut;
@@ -48,14 +48,22 @@ namespace Com.Latipium.Daemon.Controllers {
             string stdOut;
             if (StdOutLine.IsCompleted) {
                 stdOut = StdOutLine.Result;
-                StdOutLine = StdOut.ReadLineAsync();
+                Console.WriteLine(stdOut);
+                try {
+                    StdOutLine = StdOut.ReadLineAsync();
+                } catch (Exception) {
+                }
             } else {
                 stdOut = null;
             }
             string stdErr;
             if (StdErrLine.IsCompleted) {
                 stdErr = StdErrLine.Result;
-                StdErrLine = StdErr.ReadLineAsync();
+                Console.Error.WriteLine(stdErr);
+                try {
+                    StdErrLine = StdErr.ReadLineAsync();
+                } catch (Exception) {
+                }
             } else {
                 stdErr = null;
             }
@@ -92,6 +100,7 @@ namespace Com.Latipium.Daemon.Controllers {
         }
 
         public LaunchedProcess(ProcessInformation info) {
+            Console.WriteLine("{0}@{1}:{2}$ {3} {4}", Environment.UserName, Environment.UserDomainName, info.WorkingDirectory, info.FileName, info.Arguments);
             Proc = Process.Start(info);
             StdIn = Proc.StandardInput.BaseStream;
             StdOut = Proc.StandardOutput;

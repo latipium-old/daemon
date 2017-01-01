@@ -1,5 +1,5 @@
 ﻿//
-// Directory.cs
+// NetworkController.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,42 +24,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
 
-namespace Com.Latipium.Daemon.Model {
+namespace Com.Latipium.Daemon.Controllers {
     /// <summary>
-    /// Directory object.
+    /// Network controller.
     /// </summary>
-    public class DirectoryObject {
+    public class NetworkController : ApiController {
         /// <summary>
-        /// The path.
+        /// Performs the get request.
         /// </summary>
-        public string Path;
-        /// <summary>
-        /// The exists.
-        /// </summary>
-        public bool Exists;
-        /// <summary>
-        /// The files.
-        /// </summary>
-        public IEnumerable<string> Files;
-        /// <summary>
-        /// The directories.
-        /// </summary>
-        public IEnumerable<string> Directories;
+        /// <param name="id">Identifier.</param>
+        public string Get(string id) {
+            using (HttpClient client = new HttpClient()) {
+                Task<string> task = client.GetStringAsync(id.ExpandParameter());
+                task.Wait();
+                return task.Result;
+            }
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.Model.DirectoryObject"/> class.
+        /// Performs the post request.
         /// </summary>
-        /// <param name="path">Path.</param>
-        public DirectoryObject(string path = null) {
-            if (!string.IsNullOrWhiteSpace(Path = path)) {
-                if ((Exists = Directory.Exists(path))) {
-                    Files = Directory.GetFiles(Path);
-                    Directories = Directory.GetDirectories(Path);
-                }
+        /// <param name="id">Identifier.</param>
+        public string Post(string id) {
+            using (HttpClient client = new HttpClient()) {
+                Task<HttpResponseMessage> task = client.PostAsync(id.ExpandParameter(), Request.Content);
+                task.Wait();
+                Task<string> res = task.Result.Content.ReadAsStringAsync();
+                res.Wait();
+                return res.Result;
             }
         }
     }

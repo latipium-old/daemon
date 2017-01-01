@@ -26,12 +26,34 @@
 using System;
 
 namespace Com.Latipium.Daemon.Model {
+    /// <summary>
+    /// Process data.
+    /// </summary>
     public class ProcessData {
+        /// <summary>
+        /// The std out.
+        /// </summary>
         public string StdOut;
+        /// <summary>
+        /// The std error.
+        /// </summary>
         public string StdErr;
+        /// <summary>
+        /// The is running.
+        /// </summary>
         public bool IsRunning;
+        /// <summary>
+        /// The exit code.
+        /// </summary>
         public int ExitCode;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.Model.ProcessData"/> class.
+        /// </summary>
+        /// <param name="stdOut">Std out.</param>
+        /// <param name="stdErr">Std error.</param>
+        /// <param name="isRunning">If set to <c>true</c> is running.</param>
+        /// <param name="exitCode">Exit code.</param>
         public ProcessData(string stdOut = null, string stdErr = null, bool isRunning = false, int exitCode = -65536) {
             StdOut = stdOut;
             StdErr = stdErr;

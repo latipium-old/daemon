@@ -26,19 +26,28 @@
 using System;
 using System.Threading;
 using System.Web.Http;
+using System.Web.Http.Tracing;
 using Microsoft.Owin.Hosting;
 using Owin;
 
 namespace Com.Latipium.Daemon {
+    /// <summary>
+    /// Web API config.
+    /// </summary>
     public class WebApiConfig {
-        public void Register(HttpConfiguration config) {
-            config.Routes.MapHttpRoute("APIs", "v1/{controller}/{id}", new {
+        private void Register(HttpConfiguration config) {
+            config.EnableSystemDiagnosticsTracing().MinimumLevel = TraceLevel.Warn;
+            config.Routes.MapHttpRoute("APIs", "{controller}/{id}", new {
                 id = RouteParameter.Optional
             });
             config.MessageHandlers.Add(new CorsHandler());
             config.EnsureInitialized();
         }
 
+        /// <summary>
+        /// Configuration the specified appBuilder.
+        /// </summary>
+        /// <param name="appBuilder">App builder.</param>
         public void Configuration(IAppBuilder appBuilder) {
             HttpConfiguration config = new HttpConfiguration();
             Register(config);

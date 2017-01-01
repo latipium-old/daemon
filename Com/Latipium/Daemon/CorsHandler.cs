@@ -31,21 +31,23 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Com.Latipium.Daemon {
-    public class CorsHandler : DelegatingHandler {
+    internal class CorsHandler : DelegatingHandler {
         private static readonly string[] AuthorizedOrigins = new [] {
             "https://latipium.com",
             "https://www.latipium.com",
             "http://localhost",
-            "http://localhost:4000"
+            "http://localhost:4000",
+            "http://latipium-test",
+            "http://latipium-test:4000"
         };
         private static readonly string[] AuthorizedHeaders = new [] {
-            "DNT",
-            "Keep-Alive",
-            "User-Agent",
-            "X-Requested-With",
-            "If-Modified-Since",
-            "Cache-Control",
-            "Content-Type"
+            "dnt",
+            "keep-alive",
+            "user-agent",
+            "x-requested-with",
+            "if-modified-since",
+            "cache-control",
+            "content-type"
         };
         private static readonly string[] AuthorizedMethods = new [] {
             "DELETE",
@@ -78,18 +80,22 @@ namespace Com.Latipium.Daemon {
                             ", ",
                             ","
                         }, StringSplitOptions.RemoveEmptyEntries))
+                                            .Select(
+                                                s => s.ToLower())
                                             .Where(
                                                 s => AuthorizedHeaders.Contains(s))
                                             .Aggregate(
                                                 (a, b) => string.Concat(a, ",", b)));
                 }
-                if (request.Headers.Contains("Access-Control-Request-Methods")) {
-                    res.Headers.Add("Access-Control-Allow-Methods", request.Headers.GetValues("Access-Control-Request-Methods")
+                if (request.Headers.Contains("Access-Control-Request-Method")) {
+                    res.Headers.Add("Access-Control-Allow-Methods", request.Headers.GetValues("Access-Control-Request-Method")
                                             .SelectMany(
                                                 s => s.Split(new [] {
                             ", ",
                             ","
                         }, StringSplitOptions.RemoveEmptyEntries))
+                                            .Select(
+                                                s => s.ToUpper())
                                             .Where(
                                                 s => AuthorizedMethods.Contains(s))
                                             .Aggregate(

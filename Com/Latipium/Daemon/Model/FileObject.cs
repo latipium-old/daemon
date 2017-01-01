@@ -27,11 +27,27 @@ using System;
 using System.IO;
 
 namespace Com.Latipium.Daemon.Model {
+    /// <summary>
+    /// File object.
+    /// </summary>
     public class FileObject {
+        /// <summary>
+        /// The path.
+        /// </summary>
         public string Path;
+        /// <summary>
+        /// The exists.
+        /// </summary>
         public bool Exists;
+        /// <summary>
+        /// The contents.
+        /// </summary>
         public string Contents;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.Model.FileObject"/> class.
+        /// </summary>
+        /// <param name="path">Path.</param>
         public FileObject(string path = null) {
             if (!string.IsNullOrWhiteSpace(Path = path)) {
                 if ((Exists = File.Exists(path))) {

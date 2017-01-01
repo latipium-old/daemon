@@ -29,18 +29,33 @@ using System.Web.Http;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Controllers {
+    /// <summary>
+    /// Directory controller.
+    /// </summary>
     public class DirectoryController : ApiController {
+        /// <summary>
+        /// Performs the get request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public DirectoryObject Get(string id) {
             Request.Check();
             return new DirectoryObject(id.ExpandParameter());
         }
 
+        /// <summary>
+        /// Performs the put request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public DirectoryObject Put(string id) {
             Request.Check();
             Directory.CreateDirectory(id.ExpandParameter());
             return Get(id);
         }
 
+        /// <summary>
+        /// Performs the delete request.
+        /// </summary>
+        /// <param name="id">Identifier.</param>
         public DirectoryObject Delete(string id) {
             Request.Check();
             Directory.Delete(id.ExpandParameter());

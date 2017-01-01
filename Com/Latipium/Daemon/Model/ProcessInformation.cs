@@ -28,12 +28,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Com.Latipium.Daemon.Model {
+    /// <summary>
+    /// Process information.
+    /// </summary>
     public class ProcessInformation {
+        /// <summary>
+        /// The arguments.
+        /// </summary>
         public string Arguments;
+        /// <summary>
+        /// The environmental variables.
+        /// </summary>
         public Dictionary<string, string> EnvironmentalVariables;
+        /// <summary>
+        /// The name of the file.
+        /// </summary>
         public string FileName;
+        /// <summary>
+        /// The working directory.
+        /// </summary>
         public string WorkingDirectory;
 
+        /// <param name="info">Info.</param>
         public static implicit operator ProcessStartInfo(ProcessInformation info) {
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.Arguments = info.Arguments;

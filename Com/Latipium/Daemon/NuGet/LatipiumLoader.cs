@@ -31,7 +31,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace Com.Latipium.Daemon.NuGet {
-    public class LatipiumLoader {
+    internal class LatipiumLoader {
         public const string EnvKey = "LATIPIUM_ENV_READY";
         public const string ExpectedValue = "true";
 
@@ -43,7 +43,7 @@ namespace Com.Latipium.Daemon.NuGet {
 
         public void FixEnvironmentAndLaunch(NuGetRunner runner, string[] args) {
             ProcessStartInfo psi = new ProcessStartInfo();
-            psi.Arguments = args.Select(
+            psi.Arguments = args.Length == 0 ? "" : args.Select(
                 s => string.Concat("\"", s, "\""))
                 .Aggregate(
                     (a, b) => string.Concat(a, b));

@@ -31,7 +31,7 @@ using System.Linq;
 using System.Net;
 
 namespace Com.Latipium.Daemon.NuGet {
-    public class NuGetRunner {
+    internal class NuGetRunner {
         private static readonly string[] Packages = new [] {
             "Microsoft.AspNet.WebApi.Client:5.2.3",
             "Microsoft.AspNet.WebApi.Core:5.2.3",
