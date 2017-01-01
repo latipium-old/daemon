@@ -97,6 +97,7 @@
     <Compile Include="Com\Latipium\Daemon\Controllers\LaunchedProcess.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\VersionController.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\NetworkController.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\ProcessReadingThread.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

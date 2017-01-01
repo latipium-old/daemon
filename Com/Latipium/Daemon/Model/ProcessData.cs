@@ -33,11 +33,11 @@ namespace Com.Latipium.Daemon.Model {
         /// <summary>
         /// The std out.
         /// </summary>
-        public string StdOut;
+        public string[] StdOut;
         /// <summary>
         /// The std error.
         /// </summary>
-        public string StdErr;
+        public string[] StdErr;
         /// <summary>
         /// The is running.
         /// </summary>
@@ -54,7 +54,7 @@ namespace Com.Latipium.Daemon.Model {
         /// <param name="stdErr">Std error.</param>
         /// <param name="isRunning">If set to <c>true</c> is running.</param>
         /// <param name="exitCode">Exit code.</param>
-        public ProcessData(string stdOut = null, string stdErr = null, bool isRunning = false, int exitCode = -65536) {
+        public ProcessData(string[] stdOut = null, string[] stdErr = null, bool isRunning = false, int exitCode = -65536) {
             StdOut = stdOut;
             StdErr = stdErr;
             IsRunning = isRunning;

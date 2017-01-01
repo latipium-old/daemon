@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Com.Latipium.Daemon.Model;
 
@@ -33,10 +35,12 @@ namespace Com.Latipium.Daemon.Controllers {
     internal class LaunchedProcess {
         private Process Proc;
         private Stream StdIn;
-        private StreamReader StdOut;
-        private StreamReader StdErr;
-        private Task<string> StdOutLine;
-        private Task<string> StdErrLine;
+        internal StreamReader StdOut;
+        internal StreamReader StdErr;
+        internal List<string> StdOutLines;
+        internal List<string> StdErrLines;
+        internal Task<string> StdOutTask;
+        internal Task<string> StdErrTask;
 
         public ProcessData Data {
             get {
@@ -45,31 +49,28 @@ namespace Com.Latipium.Daemon.Controllers {
         }
 
         private ProcessData GetData(bool canWait) {
-            string stdOut;
-            if (StdOutLine.IsCompleted) {
-                stdOut = StdOutLine.Result;
-                Console.WriteLine(stdOut);
-                try {
-                    StdOutLine = StdOut.ReadLineAsync();
-                } catch (Exception) {
+            string[] stdOut;
+            if (StdOutLines.Count > 0) {
+                lock (StdOutLines) {
+                    stdOut = StdOutLines.ToArray();
+                    StdOutLines.Clear();
                 }
             } else {
-                stdOut = null;
+                stdOut = new string[0];
             }
-            string stdErr;
-            if (StdErrLine.IsCompleted) {
-                stdErr = StdErrLine.Result;
-                Console.Error.WriteLine(stdErr);
-                try {
-                    StdErrLine = StdErr.ReadLineAsync();
-                } catch (Exception) {
+            string[] stdErr;
+            if (StdErrLines.Count > 0) {
+                lock (StdErrLines) {
+                    stdErr = StdErrLines.ToArray();
+                    StdErrLines.Clear();
                 }
             } else {
-                stdErr = null;
+                stdErr = new string[0];
             }
             bool isRunning = !Proc.HasExited;
             if (canWait && isRunning && stdOut == null && stdErr == null) {
-                Task.WaitAny(new [] { StdOutLine, StdErrLine }, 1000);
+                Task.WaitAny(new [] { StdOutTask, StdErrTask }, 4750);
+                Thread.Sleep(250);
                 return GetData(false);
             }
             int exitCode;
@@ -105,8 +106,10 @@ namespace Com.Latipium.Daemon.Controllers {
             StdIn = Proc.StandardInput.BaseStream;
             StdOut = Proc.StandardOutput;
             StdErr = Proc.StandardError;
-            StdOutLine = StdOut.ReadLineAsync();
-            StdErrLine = StdErr.ReadLineAsync();
+            StdOutLines = new List<string>();
+            StdErrLines = new List<string>();
+            StdOutTask = StdOut.ReadLineAsync();
+            StdErrTask = StdErr.ReadLineAsync();
         }
     }
 }

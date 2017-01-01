@@ -35,7 +35,7 @@ namespace Com.Latipium.Daemon.Controllers {
     /// Process controller.
     /// </summary>
     public class ProcessController : ApiController {
-        private static Dictionary<int, LaunchedProcess> Processes;
+        internal static Dictionary<int, LaunchedProcess> Processes;
 
         /// <summary>
         /// Performs the get request.
@@ -81,7 +81,9 @@ namespace Com.Latipium.Daemon.Controllers {
                 Delete(id);
             }
             LaunchedProcess proc = new LaunchedProcess(info);
-            Processes.Add(id, proc);
+            lock (Processes) {
+                Processes.Add(id, proc);
+            }
             return proc.Data;
         }
 
@@ -90,22 +92,27 @@ namespace Com.Latipium.Daemon.Controllers {
         /// </summary>
         /// <param name="id">Identifier.</param>
         public ProcessData Delete(int id) {
-            if (Processes.ContainsKey(id)) {
-                Processes[id].Kill();
-                Processes.Remove(id);
+            lock (Processes) {
+                if (Processes.ContainsKey(id)) {
+                    Processes[id].Kill();
+                    Processes.Remove(id);
+                }
             }
             return new ProcessData();
         }
 
         private static void KillAll(object sender, EventArgs e) {
-            foreach (LaunchedProcess proc in Processes.Values) {
-                proc.Kill();
+            lock (Processes) {
+                foreach (LaunchedProcess proc in Processes.Values) {
+                    proc.Kill();
+                }
             }
         }
 
         static ProcessController() {
             Processes = new Dictionary<int, LaunchedProcess>();
             AppDomain.CurrentDomain.ProcessExit += KillAll;
+            ProcessReadingThread.Init();
         }
     }
 }
