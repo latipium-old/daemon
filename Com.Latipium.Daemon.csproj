@@ -75,6 +75,7 @@
     <Reference Include="System.Web.Http.Tracing">
       <HintPath>packages\Microsoft.AspNet.WebApi.Tracing.5.2.3\lib\net45\System.Web.Http.Tracing.dll</HintPath>
     </Reference>
+    <Reference Include="System.ServiceProcess" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -100,6 +101,11 @@
     <Compile Include="Com\Latipium\Daemon\Controllers\ProcessReadingThread.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\UNIXProcess.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsProcess.cs" />
+    <Compile Include="Com\Latipium\Daemon\WindowsService.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\WindowsMethods.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\WindowsConstants.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\WindowsMacros.cs" />
+    <Compile Include="Com\Latipium\Daemon\Controllers\WindowsStructs.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
