@@ -80,7 +80,16 @@ namespace Com.Latipium.Daemon.Controllers {
             if (Processes.ContainsKey(id)) {
                 Delete(id);
             }
-            LaunchedProcess proc = new LaunchedProcess(info);
+            LaunchedProcess proc;
+            switch (Environment.OSVersion.Platform) {
+                case PlatformID.MacOSX:
+                case PlatformID.Unix:
+                    proc = new UNIXProcess(info);
+                    break;
+                default:
+                    proc = null;
+                    break;
+            }
             lock (Processes) {
                 Processes.Add(id, proc);
             }

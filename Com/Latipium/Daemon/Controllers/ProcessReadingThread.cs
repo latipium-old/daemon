@@ -52,7 +52,7 @@ namespace Com.Latipium.Daemon.Controllers {
                                     proc.StdOutLines.Add(proc.StdOutTask.Result);
                                 }
                             }
-                            proc.StdOutTask = proc.StdOut.ReadLineAsync();
+                            proc.StartReadingStdOut();
                         }
                         if (proc.StdErrTask.IsCompleted) {
                             if (proc.StdErrTask.Result != null) {
@@ -61,7 +61,7 @@ namespace Com.Latipium.Daemon.Controllers {
                                     proc.StdErrLines.Add(proc.StdErrTask.Result);
                                 }
                             }
-                            proc.StdErrTask = proc.StdErr.ReadLineAsync();
+                            proc.StartReadingStdErr();
                         }
                     }
                     Thread.Sleep(100);

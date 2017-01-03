@@ -32,15 +32,19 @@ using System.Threading.Tasks;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Controllers {
-    internal class LaunchedProcess {
-        private Process Proc;
-        private Stream StdIn;
-        internal StreamReader StdOut;
-        internal StreamReader StdErr;
+    internal abstract class LaunchedProcess {
         internal List<string> StdOutLines;
         internal List<string> StdErrLines;
         internal Task<string> StdOutTask;
         internal Task<string> StdErrTask;
+
+        protected abstract bool IsAlive {
+            get;
+        }
+
+        protected abstract int ExitCode {
+            get;
+        }
 
         public ProcessData Data {
             get {
@@ -67,7 +71,7 @@ namespace Com.Latipium.Daemon.Controllers {
             } else {
                 stdErr = new string[0];
             }
-            bool isRunning = !Proc.HasExited;
+            bool isRunning = IsAlive;
             if (canWait && isRunning && stdOut == null && stdErr == null) {
                 Task.WaitAny(new [] { StdOutTask, StdErrTask }, 4750);
                 Thread.Sleep(250);
@@ -77,39 +81,28 @@ namespace Com.Latipium.Daemon.Controllers {
             if (isRunning) {
                 exitCode = -65537;
             } else {
-                exitCode = Proc.ExitCode;
+                exitCode = ExitCode;
             }
             return new ProcessData(stdOut, stdErr, isRunning, exitCode);
         }
 
-        public void Kill() {
-            StdIn.Close();
-            StdOut.Close();
-            StdErr.Close();
-            StdIn.Dispose();
-            StdOut.Dispose();
-            StdErr.Dispose();
-            if (!Proc.HasExited) {
-                Proc.Kill();
-            }
-            Proc.Dispose();
-        }
+        public abstract void Kill();
 
-        public void SupplyStdIn(Stream stream) {
-            stream.CopyTo(StdIn);
-            StdIn.WriteByte((byte) '\n');
-        }
+        public abstract void SupplyStdIn(Stream stream);
 
-        public LaunchedProcess(ProcessInformation info) {
+        protected abstract void Start(ProcessInformation info);
+
+        internal abstract void StartReadingStdOut();
+
+        internal abstract void StartReadingStdErr();
+
+        protected LaunchedProcess(ProcessInformation info) {
             Console.WriteLine("{0}@{1}:{2}$ {3} {4}", Environment.UserName, Environment.UserDomainName, info.WorkingDirectory, info.FileName, info.Arguments);
-            Proc = Process.Start(info);
-            StdIn = Proc.StandardInput.BaseStream;
-            StdOut = Proc.StandardOutput;
-            StdErr = Proc.StandardError;
             StdOutLines = new List<string>();
             StdErrLines = new List<string>();
-            StdOutTask = StdOut.ReadLineAsync();
-            StdErrTask = StdErr.ReadLineAsync();
+            Start(info);
+            StartReadingStdOut();
+            StartReadingStdErr();
         }
     }
 }
