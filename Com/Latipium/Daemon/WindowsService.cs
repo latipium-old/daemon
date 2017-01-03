@@ -28,9 +28,16 @@ using System.Diagnostics;
 using System.ServiceProcess;
 
 namespace Com.Latipium.Daemon {
+    /// <summary>
+    /// Windows service.
+    /// </summary>
     public class WindowsService : ServiceBase {
         private static EventLog Log;
 
+        /// <summary>
+        /// Raises the start event.
+        /// </summary>
+        /// <param name="args">Arguments.</param>
         protected override void OnStart(string[] args) {
             Log = EventLog;
         }
@@ -43,6 +50,9 @@ namespace Com.Latipium.Daemon {
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.WindowsService"/> class.
+        /// </summary>
         public WindowsService() {
             
         }
