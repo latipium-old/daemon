@@ -35,6 +35,8 @@ namespace Com.Latipium.Daemon.Controllers {
     /// The thread that reads the process stdout and stderr.
     /// </summary>
     public static class ProcessReadingThread {
+        private static Thread Thread;
+
         private static void Run() {
             while (true) {
                 try {
@@ -62,16 +64,22 @@ namespace Com.Latipium.Daemon.Controllers {
                             proc.StdErrTask = proc.StdErr.ReadLineAsync();
                         }
                     }
+                    Thread.Sleep(100);
+                } catch (ThreadInterruptedException) {
+                    break;
                 } catch (Exception ex) {
                     Console.Error.WriteLine(ex);
                 }
-                Thread.Sleep(100);
             }
         }
 
         internal static void Init() {
-            Thread thread = new Thread(Run);
-            thread.Start();
+            Thread = new Thread(Run);
+            Thread.Start();
+        }
+
+        internal static void Stop() {
+            Thread.Interrupt();
         }
     }
 }

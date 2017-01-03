@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using System.Threading;
 using Microsoft.Owin.Hosting;
+using Com.Latipium.Daemon.Controllers;
 
 namespace Com.Latipium.Daemon.NuGet {
     /// <summary>
@@ -94,6 +95,7 @@ namespace Com.Latipium.Daemon.NuGet {
                         }
                     }
                     Console.WriteLine("Shutting down server...");
+                    ProcessReadingThread.Stop();
                 }
             } else {
                 string dir = Dir;
