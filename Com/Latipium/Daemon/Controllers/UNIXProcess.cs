@@ -31,9 +31,6 @@ using Com.Latipium.Daemon.Model;
 namespace Com.Latipium.Daemon.Controllers {
     internal class UNIXProcess : LaunchedProcess {
         private Process Proc;
-        private Stream StdIn;
-        internal StreamReader StdOut;
-        internal StreamReader StdErr;
 
         protected override bool IsAlive {
             get {
@@ -47,22 +44,11 @@ namespace Com.Latipium.Daemon.Controllers {
             }
         }
 
-        public override void Kill() {
-            StdIn.Close();
-            StdOut.Close();
-            StdErr.Close();
-            StdIn.Dispose();
-            StdOut.Dispose();
-            StdErr.Dispose();
+        protected override void Cleanup() {
             if (!Proc.HasExited) {
                 Proc.Kill();
             }
             Proc.Dispose();
-        }
-
-        public override void SupplyStdIn(Stream stream) {
-            stream.CopyTo(StdIn);
-            StdIn.WriteByte((byte) '\n');
         }
 
         protected override void Start(ProcessInformation info) {
@@ -70,14 +56,6 @@ namespace Com.Latipium.Daemon.Controllers {
             StdIn = Proc.StandardInput.BaseStream;
             StdOut = Proc.StandardOutput;
             StdErr = Proc.StandardError;
-        }
-
-        internal override void StartReadingStdOut() {
-            StdOutTask = StdOut.ReadLineAsync();
-        }
-
-        internal override void StartReadingStdErr() {
-            StdErrTask = StdErr.ReadLineAsync();
         }
 
         public UNIXProcess(ProcessInformation info) : base(info) {

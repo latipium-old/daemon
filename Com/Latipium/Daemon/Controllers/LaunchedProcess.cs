@@ -37,6 +37,9 @@ namespace Com.Latipium.Daemon.Controllers {
         internal List<string> StdErrLines;
         internal Task<string> StdOutTask;
         internal Task<string> StdErrTask;
+        protected Stream StdIn;
+        protected StreamReader StdOut;
+        protected StreamReader StdErr;
 
         protected abstract bool IsAlive {
             get;
@@ -86,15 +89,32 @@ namespace Com.Latipium.Daemon.Controllers {
             return new ProcessData(stdOut, stdErr, isRunning, exitCode);
         }
 
-        public abstract void Kill();
+        protected abstract void Cleanup();
 
-        public abstract void SupplyStdIn(Stream stream);
+        public void Kill() {
+            StdIn.Close();
+            StdOut.Close();
+            StdErr.Close();
+            StdIn.Dispose();
+            StdOut.Dispose();
+            StdErr.Dispose();
+            Cleanup();
+        }
+
+        public void SupplyStdIn(Stream stream) {
+            stream.CopyTo(StdIn);
+            StdIn.WriteByte((byte) '\n');
+        }
 
         protected abstract void Start(ProcessInformation info);
 
-        internal abstract void StartReadingStdOut();
+        internal void StartReadingStdOut() {
+            StdOutTask = StdOut.ReadLineAsync();
+        }
 
-        internal abstract void StartReadingStdErr();
+        internal void StartReadingStdErr() {
+            StdErrTask = StdErr.ReadLineAsync();
+        }
 
         protected LaunchedProcess(ProcessInformation info) {
             Console.WriteLine("{0}@{1}:{2}$ {3} {4}", Environment.UserName, Environment.UserDomainName, info.WorkingDirectory, info.FileName, info.Arguments);

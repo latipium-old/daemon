@@ -36,9 +36,6 @@ namespace Com.Latipium.Daemon.Controllers {
         private IntPtr User;
         private STARTUPINFO StartInfo;
         private PROCESS_INFORMATION Process;
-        private Stream StdIn;
-        private StreamReader StdOut;
-        private StreamReader StdErr;
 
         protected override bool IsAlive {
             get {
@@ -56,13 +53,7 @@ namespace Com.Latipium.Daemon.Controllers {
             }
         }
 
-        public override void Kill() {
-            StdIn.Close();
-            StdOut.Close();
-            StdErr.Close();
-            StdIn.Dispose();
-            StdOut.Dispose();
-            StdErr.Dispose();
+        protected override void Cleanup() {
             try {
                 if (IsAlive) {
                     if (!TerminateProcess(Process.hProcess, 1)) {
@@ -77,11 +68,6 @@ namespace Com.Latipium.Daemon.Controllers {
                 CloseHandle(Process.hProcess);
                 CloseHandle(User);
             }
-        }
-
-        public override void SupplyStdIn(Stream stream) {
-            stream.CopyTo(StdIn);
-            StdIn.WriteByte((byte) '\n');
         }
 
         protected override void Start(ProcessInformation info) {
@@ -109,14 +95,6 @@ namespace Com.Latipium.Daemon.Controllers {
                 CloseHandle(user);
                 throw;
             }
-        }
-
-        internal override void StartReadingStdOut() {
-            StdOutTask = StdOut.ReadLineAsync();
-        }
-
-        internal override void StartReadingStdErr() {
-            StdErrTask = StdErr.ReadLineAsync();
         }
 
         private void Error(string function) {
