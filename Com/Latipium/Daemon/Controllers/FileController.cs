@@ -69,7 +69,9 @@ namespace Com.Latipium.Daemon.Controllers {
                     }
                 }
             }
-            return Get(id);
+            FileObject obj = Get(id);
+            obj.Contents = null;
+            return obj;
         }
 
         /// <summary>
@@ -81,7 +83,9 @@ namespace Com.Latipium.Daemon.Controllers {
             using (FileStream stream = File.Open(id.ExpandParameter(), FileMode.Create, FileAccess.Write)) {
                 Request.Content.CopyToAsync(stream).Wait();
             }
-            return Get(id);
+            FileObject obj = Get(id);
+            obj.Contents = null;
+            return obj;
         }
 
         /// <summary>
