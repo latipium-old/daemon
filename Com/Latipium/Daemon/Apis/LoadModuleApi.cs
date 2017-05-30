@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using Com.Latipium.Daemon.Api.Model;
 using Com.Latipium.Daemon.Model;
 using Com.Latipium.Daemon.Platform;
 

@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Com.Latipium.Daemon.Model;
+using Com.Latipium.Daemon.Api.Model;
 
 namespace Com.Latipium.Daemon {
     public class ModuleException : Exception {

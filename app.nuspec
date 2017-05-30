@@ -16,7 +16,7 @@
     <copyright>Copyright (c) 2016 Latipium</copyright>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="log4net" version="2.0.5" />
+      <dependency id="Com.Latipium.Daemon.Api" version="0.0.40.2" />
     </dependencies>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System" />

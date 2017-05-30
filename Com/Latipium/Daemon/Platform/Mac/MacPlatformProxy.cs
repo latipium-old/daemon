@@ -28,7 +28,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Com.Latipium.Daemon.Model;
+using Com.Latipium.Daemon.Api.Model;
 
 namespace Com.Latipium.Daemon.Platform.Mac {
     internal class MacPlatformProxy : Native, IPlatformProxy {

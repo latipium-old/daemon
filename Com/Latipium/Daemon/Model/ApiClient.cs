@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Com.Latipium.Daemon.Api.Model;
 using Com.Latipium.Daemon.Platform;
 
 namespace Com.Latipium.Daemon.Model {

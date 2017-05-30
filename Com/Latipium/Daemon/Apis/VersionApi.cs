@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Com.Latipium.Daemon.Model;
+using Com.Latipium.Daemon.Api.Model;
 
 namespace Com.Latipium.Daemon.Apis {
     public class VersionApi : AbstractApi<object, DaemonVersion> {

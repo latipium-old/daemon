@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Com.Latipium.Daemon.Api.Model;
 using Com.Latipium.Daemon.Apis;
 using Com.Latipium.Daemon.Model;
 

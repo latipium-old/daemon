@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Diagnostics;
-using Com.Latipium.Daemon.Model;
+using Com.Latipium.Daemon.Api.Model;
 
 namespace Com.Latipium.Daemon.Platform {
     internal interface IPlatformProxy {

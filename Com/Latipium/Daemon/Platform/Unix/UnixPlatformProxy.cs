@@ -30,7 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Com.Latipium.Daemon.Model;
+using Com.Latipium.Daemon.Api.Model;
 
 namespace Com.Latipium.Daemon.Platform.Unix {
     internal class UnixPlatformProxy : Native, IPlatformProxy {

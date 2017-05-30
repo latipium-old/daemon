@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Net;
+using Com.Latipium.Daemon.Api.Model;
 using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon.Apis {

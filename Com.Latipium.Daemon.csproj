@@ -62,6 +62,9 @@
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Com.Latipium.Daemon.Api">
+      <HintPath>packages\Com.Latipium.Daemon.Api.0.0.40.2\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -75,7 +78,6 @@
     <Compile Include="Com\Latipium\Daemon\WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Com\Latipium\Daemon\Model\DisplayDetectData.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\IPlatformProxy.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\UnixPlatformProxy.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\PlatformFactory.cs" />
@@ -92,18 +94,9 @@
     <Compile Include="Com\Latipium\Daemon\Model\ApiClient.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\AbstractApi.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\IApi.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\Error.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\ResponseObject.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\Side.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\VersionApi.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\DaemonVersion.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\StartSessionResponse.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\StartApi.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\WebSocketRequest.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\WebSocketTask.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\WebSocketResponse.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\LoadModuleApi.cs" />
-    <Compile Include="Com\Latipium\Daemon\Model\LoadModuleRequest.cs" />
     <Compile Include="Com\Latipium\Daemon\ClientException.cs" />
     <Compile Include="Com\Latipium\Daemon\ModuleException.cs" />
   </ItemGroup>
