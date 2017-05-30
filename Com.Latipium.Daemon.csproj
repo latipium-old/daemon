@@ -106,6 +106,13 @@
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsConstants.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsMacros.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsStructs.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\DisplayDetectData.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\IPlatformProxy.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\UnixPlatformProxy.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\PlatformFactory.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\Structs.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\Constants.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\Methods.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -124,5 +131,7 @@
     <Folder Include="Com\Latipium\Daemon\Model\" />
     <Folder Include="Com\Latipium\Daemon\Controllers\" />
     <Folder Include="Com\Latipium\Daemon\NuGet\" />
+    <Folder Include="Com\Latipium\Daemon\Platform\" />
+    <Folder Include="Com\Latipium\Daemon\Platform\Unix\" />
   </ItemGroup>
 </Project>

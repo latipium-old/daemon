@@ -1,10 +1,10 @@
 ﻿//
-// EnvironmentController.cs
+// Methods.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Zach Deibert
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Web.Http;
-using Com.Latipium.Daemon.Model;
-using Com.Latipium.Daemon.Platform;
+using System.Runtime.InteropServices;
 
-namespace Com.Latipium.Daemon.Controllers {
-    /// <summary>
-    /// Environment controller.
-    /// </summary>
-    public class EnvironmentController : ApiController {
-        internal static Dictionary<string, DisplayDetectData> DetectedDisplays = new Dictionary<string, DisplayDetectData>();
+namespace Com.Latipium.Daemon.Platform.Unix {
+    internal partial class Native {
+        [DllImport("libc")]
+        public static extern IntPtr getutxent();
 
-        /// <summary>
-        /// Performs the get request.
-        /// </summary>
-        public EnvironmentObject Get() {
-            Request.Check();
-            return new EnvironmentObject();
-        }
+        [DllImport("libc")]
+        public static extern void setutxent();
 
-        /// <summary>
-        /// Performs the put request.
-        /// </summary>
-        /// <param name="id">Identifier.</param>
-        public DisplayDetectData Put(string id) {
-            Request.Check();
-            DisplayDetectData data = PlatformFactory.Proxy.DetectDisplay(id);
-            if (data.Detected) {
-                DetectedDisplays.Add(id, data);
-            }
-            return data;
-        }
+        [DllImport("libc")]
+        public static extern void endutxent();
     }
 }
 

@@ -1,10 +1,10 @@
 ﻿//
-// EnvironmentController.cs
+// UnixPlatformProxy.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Zach Deibert
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,36 +25,36 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Web.Http;
+using System.Runtime.InteropServices;
 using Com.Latipium.Daemon.Model;
-using Com.Latipium.Daemon.Platform;
 
-namespace Com.Latipium.Daemon.Controllers {
-    /// <summary>
-    /// Environment controller.
-    /// </summary>
-    public class EnvironmentController : ApiController {
-        internal static Dictionary<string, DisplayDetectData> DetectedDisplays = new Dictionary<string, DisplayDetectData>();
-
-        /// <summary>
-        /// Performs the get request.
-        /// </summary>
-        public EnvironmentObject Get() {
-            Request.Check();
-            return new EnvironmentObject();
-        }
-
-        /// <summary>
-        /// Performs the put request.
-        /// </summary>
-        /// <param name="id">Identifier.</param>
-        public DisplayDetectData Put(string id) {
-            Request.Check();
-            DisplayDetectData data = PlatformFactory.Proxy.DetectDisplay(id);
-            if (data.Detected) {
-                DetectedDisplays.Add(id, data);
+namespace Com.Latipium.Daemon.Platform.Unix {
+    internal class UnixPlatformProxy : Native, IPlatformProxy {
+        public DisplayDetectData DetectDisplay(string id) {
+            setutxent();
+            IntPtr utxp;
+            List<DisplayDetectData> displays = new List<DisplayDetectData>();
+            while ((utxp = getutxent()) != IntPtr.Zero) {
+                utmpx utx = (utmpx) Marshal.PtrToStructure(utxp, typeof(utmpx));
+                if (utx.ut_type == USER_PROCESS && utx.ut_host[0] != 0) {
+                    displays.Add(new DisplayDetectData() {
+                        User = new string(utx.ut_user),
+                        Display = new string(utx.ut_host)
+                    });
+                }
             }
-            return data;
+            endutxent();
+            switch (displays.Count) {
+                case 0:
+                    return new DisplayDetectData();
+                case 1:
+                    DisplayDetectData data = displays[0];
+                    data.Detected = true;
+                    return data;
+                default:
+                    // TODO
+                    return new DisplayDetectData();
+            }
         }
     }
 }
