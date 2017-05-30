@@ -102,6 +102,10 @@
     <Compile Include="Com\Latipium\Daemon\Model\WebSocketRequest.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\WebSocketTask.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\WebSocketResponse.cs" />
+    <Compile Include="Com\Latipium\Daemon\Apis\LoadModuleApi.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\LoadModuleRequest.cs" />
+    <Compile Include="Com\Latipium\Daemon\ClientException.cs" />
+    <Compile Include="Com\Latipium\Daemon\ModuleException.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Com.Latipium.Daemon.Platform;
 
 namespace Com.Latipium.Daemon.Model {
     public class ApiClient {
@@ -34,7 +36,27 @@ namespace Com.Latipium.Daemon.Model {
         private CancellationTokenSource CancellationTokenSource = null;
         public event Action Deleted;
         public Guid Id = Guid.NewGuid();
-        public DisplayDetectData Display;
+        private DisplayDetectData _Display;
+        public DisplayDetectData Display {
+            get {
+                return _Display;
+            }
+            set {
+                _Display = value;
+                LatipiumDir = PlatformFactory.Proxy.FindLatipiumDir(value.User);
+            }
+        }
+        public string LatipiumDir {
+            get;
+            private set;
+        }
+        public Dictionary<string, Guid> LoadedModules = new Dictionary<string, Guid>();
+
+        public void TimeOut() {
+            if (Deleted != null) {
+                Deleted();
+            }
+        }
 
         public ApiClient Ping() {
             if (CancellationTokenSource != null) {
@@ -42,8 +64,8 @@ namespace Com.Latipium.Daemon.Model {
             }
             CancellationTokenSource = new CancellationTokenSource();
             Task.Delay(DeletionTimeout, CancellationTokenSource.Token).ContinueWith(t => {
-                if (!t.IsCanceled && Deleted != null) {
-                    Deleted();
+                if (!t.IsCanceled) {
+                    TimeOut();
                 }
             });
             return this;

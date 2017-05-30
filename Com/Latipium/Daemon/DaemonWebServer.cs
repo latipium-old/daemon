@@ -45,6 +45,7 @@ namespace Com.Latipium.Daemon {
         private Dictionary<string, IApi> Apis;
         private Dictionary<Guid, ApiClient> Clients;
         private CancellationTokenSource CancellationTokenSource;
+        public readonly string BaseUrl;
 
         public void Dispose() {
             Dispose(true);
@@ -74,6 +75,9 @@ namespace Com.Latipium.Daemon {
                 try {
                     IApi api = Apis[url];
                     result = api.HandleRequest(JsonConvert.DeserializeObject(request, api.RequestType), client);
+                } catch (ClientException ex) {
+                    WindowsService.WriteLog(ex);
+                    result = ex.Error;
                 } catch (Exception ex) {
                     WindowsService.WriteLog(ex);
                     result = new Error() {
@@ -164,7 +168,7 @@ namespace Com.Latipium.Daemon {
 
         public DaemonWebServer() {
             Listener = new HttpListener();
-            Listener.Prefixes.Add(Environment.GetEnvironmentVariable("LATIPIUM_DAEMON_URL") ?? DefaultUrl);
+            Listener.Prefixes.Add(BaseUrl = Environment.GetEnvironmentVariable("LATIPIUM_DAEMON_URL") ?? DefaultUrl);
         }
 
         ~DaemonWebServer() {
