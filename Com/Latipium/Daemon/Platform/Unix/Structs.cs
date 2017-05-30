@@ -58,6 +58,16 @@ namespace Com.Latipium.Daemon.Platform.Unix {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
             public char[] __unused;
         }
+
+        protected struct passwd {
+            public IntPtr pw_name;
+            public IntPtr pw_passwd;
+            public int pw_uid;
+            public int pw_gid;
+            public IntPtr pw_gecos;
+            public IntPtr pw_dir;
+            public IntPtr pw_shell;
+        }
 #pragma warning restore 0649
     }
 }

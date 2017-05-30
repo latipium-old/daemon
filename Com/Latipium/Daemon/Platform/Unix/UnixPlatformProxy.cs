@@ -190,6 +190,22 @@ namespace Com.Latipium.Daemon.Platform.Unix {
             }
         }
 
+        public string FindLatipiumDir(string user) {
+            setpwent();
+            IntPtr passwdPtr;
+            while ((passwdPtr = getpwent()) != IntPtr.Zero) {
+                passwd passwd = (passwd) Marshal.PtrToStructure(passwdPtr, typeof(passwd));
+                if (Marshal.PtrToStringAuto(passwd.pw_name) == user) {
+                    string dir = Path.Combine(Marshal.PtrToStringAuto(passwd.pw_dir), ".latipium");
+                    Directory.CreateDirectory(dir);
+                    endpwent();
+                    return dir;
+                }
+            }
+            endpwent();
+            return null;
+        }
+
         public static bool IsActuallyMac() {
             IntPtr buf = Marshal.AllocHGlobal(8192);
             try {

@@ -39,6 +39,15 @@ namespace Com.Latipium.Daemon.Platform.Unix {
 
         [DllImport("libc")]
         public static extern int uname(IntPtr buf);
+
+        [DllImport("libc")]
+        public static extern IntPtr getpwent();
+
+        [DllImport("libc")]
+        public static extern void setpwent();
+
+        [DllImport("libc")]
+        public static extern void endpwent();
     }
 }
 

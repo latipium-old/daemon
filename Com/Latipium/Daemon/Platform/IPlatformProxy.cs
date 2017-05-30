@@ -32,6 +32,8 @@ namespace Com.Latipium.Daemon.Platform {
         DisplayDetectData DetectDisplay(string id);
 
         Process Start(ProcessStartInfo psi, DisplayDetectData display);
+
+        string FindLatipiumDir(string user);
     }
 }
 
