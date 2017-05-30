@@ -64,6 +64,7 @@ namespace Com.Latipium.Daemon.NuGet {
         private static bool CheckDirectoryPermissions(string dir) {
             string file = Path.Combine(dir, ".latipium-test");
             try {
+                Directory.CreateDirectory(dir);
                 if (!File.Exists(file)) {
                     using (File.Create(file)) {
                     }
@@ -87,7 +88,10 @@ namespace Com.Latipium.Daemon.NuGet {
                         Console.WriteLine("Application started.");
                         Console.WriteLine("Press any key to stop the server");
                         try {
-                            Console.ReadKey(true);
+                            ConsoleKeyInfo key;
+                            do {
+                                key = Console.ReadKey(true);
+                            } while (key.Key == 0 && key.KeyChar == '\0');
                         } catch (Exception) {
                             try {
                                 while (true) {

@@ -1,5 +1,5 @@
 ﻿//
-// PlatformFactory.cs
+// Structs.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,35 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Com.Latipium.Daemon.Platform.Mac;
-using Com.Latipium.Daemon.Platform.Unix;
+using System.Runtime.InteropServices;
 
-namespace Com.Latipium.Daemon.Platform {
-    internal static class PlatformFactory {
-        private static IPlatformProxy Instance = null;
-
-        public static IPlatformProxy Proxy {
-            get {
-                if (Instance == null) {
-                    switch (Environment.OSVersion.Platform) {
-                        case PlatformID.Unix:
-                            if (UnixPlatformProxy.IsActuallyMac()) {
-                                Instance = new MacPlatformProxy();
-                            } else {
-                                Instance = new UnixPlatformProxy();
-                            }
-                            break;
-                        case PlatformID.MacOSX:
-                            Instance = new MacPlatformProxy();
-                            break;
-                        default:
-                            // TODO Windows support
-                            break;
-                    }
-                }
-                return Instance;
-            }
+namespace Com.Latipium.Daemon.Platform.Mac {
+    internal partial class Native {
+#pragma warning disable 0649
+        protected new struct utmpx {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = _UTX_USERSIZE)]
+            public char[] ut_user;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = _UTX_IDSIZE)]
+            public char[] ut_id;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = _UTX_LINESIZE)]
+            public char[] ut_line;
+            public int ut_pid;
+            public short ut_type;
+            public timeval ut_tv;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = _UTX_HOSTSIZE)]
+            public char[] ut_host;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            public char[] ut_pad;
         }
+#pragma warning restore 0649
     }
 }
 

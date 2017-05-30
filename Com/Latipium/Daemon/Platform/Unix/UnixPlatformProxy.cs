@@ -190,6 +190,19 @@ namespace Com.Latipium.Daemon.Platform.Unix {
             }
         }
 
+        public static bool IsActuallyMac() {
+            IntPtr buf = Marshal.AllocHGlobal(8192);
+            try {
+                uname(buf);
+                if (Marshal.PtrToStringAuto(buf) == "Darwin") {
+                    return true;
+                }
+            } finally {
+                Marshal.FreeHGlobal(buf);
+            }
+            return false;
+        }
+
         private static void KillAll(object sender, EventArgs e) {
             foreach (List<VerificationState> states in VerificationStates.Values) {
                 foreach (VerificationState state in states) {

@@ -36,6 +36,9 @@ namespace Com.Latipium.Daemon.Platform.Unix {
 
         [DllImport("libc")]
         public static extern void endutxent();
+
+        [DllImport("libc")]
+        public static extern int uname(IntPtr buf);
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿//
-// PlatformFactory.cs
+// Constants.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,35 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Com.Latipium.Daemon.Platform.Mac;
-using Com.Latipium.Daemon.Platform.Unix;
 
-namespace Com.Latipium.Daemon.Platform {
-    internal static class PlatformFactory {
-        private static IPlatformProxy Instance = null;
-
-        public static IPlatformProxy Proxy {
-            get {
-                if (Instance == null) {
-                    switch (Environment.OSVersion.Platform) {
-                        case PlatformID.Unix:
-                            if (UnixPlatformProxy.IsActuallyMac()) {
-                                Instance = new MacPlatformProxy();
-                            } else {
-                                Instance = new UnixPlatformProxy();
-                            }
-                            break;
-                        case PlatformID.MacOSX:
-                            Instance = new MacPlatformProxy();
-                            break;
-                        default:
-                            // TODO Windows support
-                            break;
-                    }
-                }
-                return Instance;
-            }
-        }
+namespace Com.Latipium.Daemon.Platform.Mac {
+    internal partial class Native {
+        protected const int _UTX_USERSIZE = 256;
+        protected const int _UTX_IDSIZE = 4;
+        protected const int _UTX_LINESIZE = 32;
+        protected const int _UTX_HOSTSIZE = 256;
     }
 }
 

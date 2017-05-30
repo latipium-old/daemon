@@ -126,6 +126,10 @@
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\Constants.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\Methods.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\VerificationState.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Mac\MacPlatformProxy.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Mac\Native.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Mac\Structs.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Mac\Constants.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -141,5 +145,8 @@
     <EmbeddedResource Include="Com\Latipium\Daemon\Platform\Unix\ConfirmDialog.resx">
       <DependentUpon>ConfirmDialog.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Com\Latipium\Daemon\Platform\Mac\" />
   </ItemGroup>
 </Project>
