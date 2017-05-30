@@ -26,8 +26,10 @@
 using System;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 using Microsoft.Owin.Hosting;
 using Com.Latipium.Daemon.Controllers;
+using Com.Latipium.Daemon.Platform.Unix;
 
 namespace Com.Latipium.Daemon.NuGet {
     /// <summary>
@@ -78,39 +80,57 @@ namespace Com.Latipium.Daemon.NuGet {
         /// </summary>
         /// <param name="args">The command-line arguments.</param>
         public static void Main(string[] args) {
-            LatipiumLoader loader = new LatipiumLoader();
-            if (loader.IsEnvironmentReady) {
-                using (WebApp.Start<WebApiConfig>(args.Length == 0 ? "http://localhost:43475" : args[0])) {
-                    Console.WriteLine("Application started.");
-                    Console.WriteLine("Press any key to stop the server");
-                    try {
-                        Console.ReadKey(true);
-                    } catch (Exception) {
+            if (args.Length == 0) {
+                LatipiumLoader loader = new LatipiumLoader();
+                if (loader.IsEnvironmentReady) {
+                    using (WebApp.Start<WebApiConfig>(args.Length == 0 ? "http://localhost:43475" : args[0])) {
+                        Console.WriteLine("Application started.");
+                        Console.WriteLine("Press any key to stop the server");
                         try {
-                            while (true) {
-                                Thread.Sleep(int.MaxValue);
+                            Console.ReadKey(true);
+                        } catch (Exception) {
+                            try {
+                                while (true) {
+                                    Thread.Sleep(int.MaxValue);
+                                }
+                            } catch (Exception ex) {
+                                Console.Error.WriteLine(ex);
                             }
-                        } catch (Exception ex) {
-                            Console.Error.WriteLine(ex);
                         }
+                        Console.WriteLine("Shutting down server...");
+                        ProcessReadingThread.Stop();
                     }
-                    Console.WriteLine("Shutting down server...");
-                    ProcessReadingThread.Stop();
+                } else {
+                    string dir = Dir;
+                    if (!Directory.Exists(dir)) {
+                        Directory.CreateDirectory(dir);
+                    }
+                    Console.WriteLine("Initialized in {0}", dir);
+                    NuGetRunner nuget = new NuGetRunner(dir);
+                    if (!nuget.IsDownloaded) {
+                        nuget.Download();
+                    }
+                    if (!nuget.IsInstalled) {
+                        nuget.Install();
+                    }
+                    loader.FixEnvironmentAndLaunch(nuget, args);
                 }
             } else {
-                string dir = Dir;
-                if (!Directory.Exists(dir)) {
-                    Directory.CreateDirectory(dir);
+                switch (args[0]) {
+                    case "confirm":
+                        if (args.Length != 2) {
+                            Console.Error.WriteLine("Usage: Com.Latipium.Daemon.exe confirm [token]");
+                            Environment.Exit(1);
+                        } else {
+                            ConfirmDialog dialog = new ConfirmDialog();
+                            dialog.Token = args[1];
+                            Application.Run(dialog);
+                        }
+                        break;
+                    default:
+                        Console.Error.WriteLine("Unknown command {0}", args[0]);
+                        break;
                 }
-                Console.WriteLine("Initialized in {0}", dir);
-                NuGetRunner nuget = new NuGetRunner(dir);
-                if (!nuget.IsDownloaded) {
-                    nuget.Download();
-                }
-                if (!nuget.IsInstalled) {
-                    nuget.Install();
-                }
-                loader.FixEnvironmentAndLaunch(nuget, args);
             }
         }
     }

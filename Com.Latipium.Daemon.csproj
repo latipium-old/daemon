@@ -46,6 +46,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting">
       <HintPath>$(SolutionDir)\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
@@ -76,6 +78,8 @@
       <HintPath>packages\Microsoft.AspNet.WebApi.Tracing.5.2.3\lib\net45\System.Web.Http.Tracing.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -84,6 +88,12 @@
     <Compile Include="Com\Latipium\Daemon\NuGet\Entry.cs" />
     <Compile Include="Com\Latipium\Daemon\NuGet\LatipiumLoader.cs" />
     <Compile Include="Com\Latipium\Daemon\NuGet\NuGetRunner.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\ConfirmDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\ConfirmDialog.Designer.cs">
+      <DependentUpon>ConfirmDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Com\Latipium\Daemon\WebApiConfig.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\DirectoryObject.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\ControllerExtensions.cs" />
@@ -101,7 +111,9 @@
     <Compile Include="Com\Latipium\Daemon\Controllers\ProcessReadingThread.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\UNIXProcess.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsProcess.cs" />
-    <Compile Include="Com\Latipium\Daemon\WindowsService.cs" />
+    <Compile Include="Com\Latipium\Daemon\WindowsService.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsMethods.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsConstants.cs" />
     <Compile Include="Com\Latipium\Daemon\Controllers\WindowsMacros.cs" />
@@ -125,13 +137,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Com\" />
-    <Folder Include="Com\Latipium\" />
-    <Folder Include="Com\Latipium\Daemon\" />
-    <Folder Include="Com\Latipium\Daemon\Model\" />
-    <Folder Include="Com\Latipium\Daemon\Controllers\" />
-    <Folder Include="Com\Latipium\Daemon\NuGet\" />
-    <Folder Include="Com\Latipium\Daemon\Platform\" />
-    <Folder Include="Com\Latipium\Daemon\Platform\Unix\" />
+    <EmbeddedResource Include="Com\Latipium\Daemon\Platform\Unix\ConfirmDialog.resx">
+      <DependentUpon>ConfirmDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
