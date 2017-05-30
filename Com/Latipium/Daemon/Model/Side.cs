@@ -1,5 +1,5 @@
 ﻿//
-// WindowsMacros.cs
+// Side.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,14 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.CompilerServices;
 
-namespace Com.Latipium.Daemon.Controllers {
-    partial class WindowsProcess {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ushort MAKELANGID(ushort p, ushort s) {
-            return (ushort) ((s << 10) | p);
-        }
+namespace Com.Latipium.Daemon.Model {
+    public enum Side {
+        Client,
+        Server,
+        Module
     }
 }
 

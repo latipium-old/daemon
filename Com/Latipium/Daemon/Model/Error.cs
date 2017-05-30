@@ -1,10 +1,10 @@
 ﻿//
-// Entry.cs
+// Error.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Zach Deibert
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading;
-using System.Web.Http;
-using System.Web.Http.Tracing;
-using Microsoft.Owin.Hosting;
-using Owin;
 
-namespace Com.Latipium.Daemon {
-    /// <summary>
-    /// Web API config.
-    /// </summary>
-    public class WebApiConfig {
-        private void Register(HttpConfiguration config) {
-            config.EnableSystemDiagnosticsTracing().MinimumLevel = TraceLevel.Warn;
-            config.Routes.MapHttpRoute("APIs", "{controller}/{id}", new {
-                id = RouteParameter.Optional
-            });
-            config.MessageHandlers.Add(new CorsHandler());
-            config.EnsureInitialized();
-        }
+namespace Com.Latipium.Daemon.Model {
+    public class Error : ResponseObject {
+        public string Message;
+        public Side Side;
 
-        /// <summary>
-        /// Configuration the specified appBuilder.
-        /// </summary>
-        /// <param name="appBuilder">App builder.</param>
-        public void Configuration(IAppBuilder appBuilder) {
-            HttpConfiguration config = new HttpConfiguration();
-            Register(config);
-            appBuilder.UseWebApi(config);
+        public Error() {
+            Successful = false;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿//
-// Directory.cs
+// ResponseObject.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Zach Deibert
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,44 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Com.Latipium.Daemon.Model {
-    /// <summary>
-    /// Directory object.
-    /// </summary>
-    public class DirectoryObject {
-        /// <summary>
-        /// The path.
-        /// </summary>
-        public string Path;
-        /// <summary>
-        /// The exists.
-        /// </summary>
-        public bool Exists;
-        /// <summary>
-        /// The files.
-        /// </summary>
-        public IEnumerable<string> Files;
-        /// <summary>
-        /// The directories.
-        /// </summary>
-        public IEnumerable<string> Directories;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.Model.DirectoryObject"/> class.
-        /// </summary>
-        /// <param name="path">Path.</param>
-        public DirectoryObject(string path = null) {
-            if (!string.IsNullOrWhiteSpace(Path = path)) {
-                if ((Exists = Directory.Exists(path))) {
-                    Files = Directory.GetFiles(Path);
-                    Directories = Directory.GetDirectories(Path);
-                }
-            }
-        }
+    public class ResponseObject {
+        public bool Successful = true;
     }
 }
 

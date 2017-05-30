@@ -1,10 +1,10 @@
 ﻿//
-// FileObject.cs
+// IApi.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Zach Deibert
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.IO;
+using Com.Latipium.Daemon.Model;
 
-namespace Com.Latipium.Daemon.Model {
-    /// <summary>
-    /// File object.
-    /// </summary>
-    public class FileObject {
-        /// <summary>
-        /// The path.
-        /// </summary>
-        public string Path;
-        /// <summary>
-        /// The exists.
-        /// </summary>
-        public bool Exists;
-        /// <summary>
-        /// The contents.
-        /// </summary>
-        public string Contents;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.Model.FileObject"/> class.
-        /// </summary>
-        /// <param name="path">Path.</param>
-        public FileObject(string path = null) {
-            if (!string.IsNullOrWhiteSpace(Path = path)) {
-                if ((Exists = File.Exists(path))) {
-                    Contents = File.ReadAllText(path);
-                }
-            }
+namespace Com.Latipium.Daemon.Apis {
+    public interface IApi {
+        string Url {
+            get;
         }
+
+        Type RequestType {
+            get;
+        }
+
+        Type ResponseType {
+            get;
+        }
+
+        ResponseObject _Handle(object req, ApiClient client);
     }
 }
 

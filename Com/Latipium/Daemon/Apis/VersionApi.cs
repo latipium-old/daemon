@@ -1,10 +1,10 @@
 ﻿//
-// DirectoryController.cs
+// VersionApi.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Zach Deibert
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,42 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.IO;
-using System.Web.Http;
 using Com.Latipium.Daemon.Model;
 
-namespace Com.Latipium.Daemon.Controllers {
-    /// <summary>
-    /// Directory controller.
-    /// </summary>
-    public class DirectoryController : ApiController {
-        /// <summary>
-        /// Performs the get request.
-        /// </summary>
-        /// <param name="id">Identifier.</param>
-        public DirectoryObject Get(string id) {
-            Request.Check();
-            return new DirectoryObject(id.ExpandParameter());
+namespace Com.Latipium.Daemon.Apis {
+    public class VersionApi : AbstractApi<object, DaemonVersion> {
+        public override DaemonVersion Handle(object req, ApiClient client) {
+            return new DaemonVersion();
         }
 
-        /// <summary>
-        /// Performs the put request.
-        /// </summary>
-        /// <param name="id">Identifier.</param>
-        public DirectoryObject Put(string id) {
-            Request.Check();
-            Directory.CreateDirectory(id.ExpandParameter());
-            return Get(id);
-        }
-
-        /// <summary>
-        /// Performs the delete request.
-        /// </summary>
-        /// <param name="id">Identifier.</param>
-        public DirectoryObject Delete(string id) {
-            Request.Check();
-            Directory.Delete(id.ExpandParameter());
-            return Get(id);
+        public VersionApi() : base("/version") {
         }
     }
 }

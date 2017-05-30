@@ -1,5 +1,5 @@
 ﻿//
-// WindowsStructs.cs
+// ApiClient.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,36 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.InteropServices;
 
-namespace Com.Latipium.Daemon.Controllers {
-    partial class WindowsProcess {
-        private struct STARTUPINFO {
-            public uint cb;
-            public string lpReserved;
-            public string lpDesktop;
-            public string lpTitle;
-            public uint dwX;
-            public uint dwY;
-            public uint dwXSize;
-            public uint dwYSize;
-            public uint dwXCountChars;
-            public uint dwYCountChars;
-            public uint dwFillAttribute;
-            public uint dwFlags;
-            public ushort wShowWindow;
-            public ushort cbReserved2;
-            public byte lpReserved2;
-            public IntPtr hStdInput;
-            public IntPtr hStdOutput;
-            public IntPtr hStdErr;
-        }
-
-        private struct PROCESS_INFORMATION {
-            public IntPtr hProcess;
-            public IntPtr hThread;
-            public uint dwProcessId;
-            public uint dwThreadId;
+namespace Com.Latipium.Daemon.Model {
+    public class ApiClient {
+        public ApiClient() {
         }
     }
 }

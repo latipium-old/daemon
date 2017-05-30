@@ -1,5 +1,5 @@
 ﻿//
-// WindowsConstants.cs
+// DaemonVersion.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,18 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Reflection;
 
-namespace Com.Latipium.Daemon.Controllers {
-    partial class WindowsProcess {
-        private const uint FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
-        private const uint FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
-        private const uint FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
-        private const ushort LANG_NEUTRAL = 0x00;
-        private const ushort SUBLANG_DEFAULT = 0x01;
-        private const uint STARTF_USESTDHANDLES = 0x00000100;
-        private const uint CREATE_UNICODE_ENVIRONMENT = 0x00000400;
-        private const uint STILL_ACTIVE = 259;
-        private const uint WAIT_FAILED = 0xFFFFFFFF;
+namespace Com.Latipium.Daemon.Model {
+    public class DaemonVersion : ResponseObject {
+        public Version Version;
+
+        public DaemonVersion() {
+            Version = Assembly.GetEntryAssembly().GetName().Version;
+        }
     }
 }
 

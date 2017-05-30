@@ -50,11 +50,14 @@ namespace Com.Latipium.Daemon {
             }
         }
 
+        internal static void WriteLog(Exception ex) {
+            WriteLog(ex.ToString());
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.WindowsService"/> class.
         /// </summary>
         public WindowsService() {
-            
         }
     }
 }
