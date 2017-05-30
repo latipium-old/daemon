@@ -83,7 +83,7 @@ namespace Com.Latipium.Daemon.NuGet {
             if (args.Length == 0) {
                 LatipiumLoader loader = new LatipiumLoader();
                 if (loader.IsEnvironmentReady) {
-                    using (WebApp.Start<WebApiConfig>(args.Length == 0 ? "http://localhost:43475" : args[0])) {
+                    using (WebApp.Start<WebApiConfig>(Environment.GetEnvironmentVariable("LATIPIUM_DAEMON_URL") ?? "http://localhost:43475")) {
                         Console.WriteLine("Application started.");
                         Console.WriteLine("Press any key to stop the server");
                         try {

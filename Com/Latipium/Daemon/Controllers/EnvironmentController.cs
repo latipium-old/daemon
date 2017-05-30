@@ -52,7 +52,7 @@ namespace Com.Latipium.Daemon.Controllers {
             Request.Check();
             DisplayDetectData data = PlatformFactory.Proxy.DetectDisplay(id);
             if (data.Detected) {
-                DetectedDisplays.Add(id, data);
+                DetectedDisplays[id] = data;
             }
             return data;
         }

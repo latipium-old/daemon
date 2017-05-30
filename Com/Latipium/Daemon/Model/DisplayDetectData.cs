@@ -46,6 +46,10 @@ namespace Com.Latipium.Daemon.Model {
         /// The name of the display.
         /// </summary>
         public string Display;
+        /// <summary>
+        /// The file that contains the X authentication tokens.
+        /// </summary>
+        public string Authority;
     }
 }
 

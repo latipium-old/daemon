@@ -1,5 +1,5 @@
 ﻿//
-// IPlatformProxy.cs
+// VerificationState.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -27,11 +27,13 @@ using System;
 using System.Diagnostics;
 using Com.Latipium.Daemon.Model;
 
-namespace Com.Latipium.Daemon.Platform {
-    internal interface IPlatformProxy {
-        DisplayDetectData DetectDisplay(string id);
-
-        Process Start(ProcessStartInfo psi, DisplayDetectData display);
+namespace Com.Latipium.Daemon.Platform.Unix {
+    internal class VerificationState {
+        public DisplayDetectData Display;
+        public string SessionId;
+        public bool HasConfirmed;
+        public bool HasDenied;
+        public Process Process;
     }
 }
 

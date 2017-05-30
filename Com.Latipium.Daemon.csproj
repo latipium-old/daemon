@@ -125,6 +125,7 @@
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\Structs.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\Constants.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\Methods.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Unix\VerificationState.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
