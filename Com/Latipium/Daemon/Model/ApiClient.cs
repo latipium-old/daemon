@@ -24,10 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Com.Latipium.Daemon.Model {
     public class ApiClient {
-        public ApiClient() {
+        public static readonly TimeSpan DeletionTimeout = TimeSpan.FromMinutes(5);
+
+        private CancellationTokenSource CancellationTokenSource = null;
+        public event Action Deleted;
+        public Guid Id = Guid.NewGuid();
+        public DisplayDetectData Display;
+
+        public ApiClient Ping() {
+            if (CancellationTokenSource != null) {
+                CancellationTokenSource.Cancel();
+            }
+            CancellationTokenSource = new CancellationTokenSource();
+            Task.Delay(DeletionTimeout, CancellationTokenSource.Token).ContinueWith(t => {
+                if (!t.IsCanceled && Deleted != null) {
+                    Deleted();
+                }
+            });
+            return this;
         }
     }
 }

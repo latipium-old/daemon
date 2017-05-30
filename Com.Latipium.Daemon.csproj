@@ -31,8 +31,14 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <Commandlineparameters>http://*:43475</Commandlineparameters>
-    <Externalconsole>true</Externalconsole>
+    <Commandlineparameters>run</Commandlineparameters>
+    <EnvironmentVariables>
+      <EnvironmentVariables>
+        <Variable name="LATIPIUM_DEBUG" value="true" />
+        <Variable name="LATIPIUM_DAEMON_URL" value="http://+:43475/" />
+      </EnvironmentVariables>
+    </EnvironmentVariables>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Prerelease|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -91,6 +97,8 @@
     <Compile Include="Com\Latipium\Daemon\Model\Side.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\VersionApi.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\DaemonVersion.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\StartSessionResponse.cs" />
+    <Compile Include="Com\Latipium\Daemon\Apis\StartApi.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

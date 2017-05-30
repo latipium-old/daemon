@@ -38,6 +38,7 @@ namespace Com.Latipium.Daemon {
         private const string DefaultUrl = "http://localhost:43475/";
         private HttpListener Listener;
         private Dictionary<string, IApi> Apis;
+        private Dictionary<Guid, ApiClient> Clients;
 
         public void Dispose() {
             Dispose(true);
@@ -53,12 +54,19 @@ namespace Com.Latipium.Daemon {
             }
         }
 
+        public ApiClient RegisterClient() {
+            ApiClient client = new ApiClient();
+            client.Deleted += () => Clients.Remove(client.Id);
+            Clients[client.Id] = client;
+            return client.Ping();
+        }
+
         private string Handle(string url, string request, ApiClient client) {
             ResponseObject result;
             if (Apis.ContainsKey(url)) {
                 try {
                     IApi api = Apis[url];
-                    result = api._Handle(JsonConvert.DeserializeObject(request, api.RequestType), client);
+                    result = api.HandleRequest(JsonConvert.DeserializeObject(request, api.RequestType), client);
                 } catch (Exception ex) {
                     WindowsService.WriteLog(ex);
                     result = new Error() {
@@ -85,12 +93,14 @@ namespace Com.Latipium.Daemon {
                 using (TextReader reader = new StreamReader(ctx.Request.InputStream)) {
                     request = reader.ReadToEnd();
                 }
-                // TODO get the client
-                string response = Handle(ctx.Request.Url.AbsolutePath, request, null);
+                Guid clientId = Guid.Empty;
+                Guid.TryParse(ctx.Request.Headers["X-Latipium-Client-Id"] ?? "", out clientId);
+                string response = Handle(ctx.Request.Url.AbsolutePath, request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
                 ctx.Response.ContentType = "application/json";
                 using (TextWriter writer = new StreamWriter(ctx.Response.OutputStream)) {
                     writer.Write(response);
                 }
+                ctx.Response.Close();
             }
         }
 
@@ -100,6 +110,10 @@ namespace Com.Latipium.Daemon {
                 .Select(t => t.GetConstructor(new Type[0]).Invoke(new object[0]))
                 .Cast<IApi>()
                 .ToDictionary(a => a.Url);
+            foreach (IApi api in Apis.Values) {
+                api.Server = this;
+            }
+            Clients = new Dictionary<Guid, ApiClient>();
             Listener.Start();
             Listener.BeginGetContext(GetContextCallback, null);
         }

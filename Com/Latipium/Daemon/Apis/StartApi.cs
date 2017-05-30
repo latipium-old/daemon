@@ -1,5 +1,5 @@
 ﻿//
-// AbstractApi.cs
+// StartApi.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,41 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Net;
 using Com.Latipium.Daemon.Model;
+using Com.Latipium.Daemon.Platform;
 
 namespace Com.Latipium.Daemon.Apis {
-    public abstract class AbstractApi<TRequest, TResponse> : IApi where TResponse : ResponseObject {
-        public string Url {
-            get;
-            private set;
-        }
-
-        public Type RequestType {
-            get {
-                return typeof(TRequest);
+    public class StartApi : AbstractApi<object, StartSessionResponse> {
+        public override StartSessionResponse Handle(object req, ApiClient client) {
+            if (client == null) {
+                client = Server.RegisterClient();
             }
-        }
-
-        public Type ResponseType {
-            get {
-                return typeof(TResponse);
+            DisplayDetectData display = PlatformFactory.Proxy.DetectDisplay(client.Id.ToString());
+            if (display.Detected) {
+                client.Display = display;
             }
+            return new StartSessionResponse() {
+                Display = display,
+                ClientId = client.Id
+            };
         }
 
-        public DaemonWebServer Server {
-            get;
-            set;
-        }
-
-        public abstract TResponse Handle(TRequest req, ApiClient client);
-
-        public ResponseObject HandleRequest(object req, ApiClient client) {
-            return Handle((TRequest) req, client);
-        }
-
-        protected AbstractApi(string url) {
-            Url = url;
+        public StartApi() : base("/session/start") {
         }
     }
 }

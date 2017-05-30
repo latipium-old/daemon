@@ -40,7 +40,11 @@ namespace Com.Latipium.Daemon.Apis {
             get;
         }
 
-        ResponseObject _Handle(object req, ApiClient client);
+        DaemonWebServer Server {
+            set;
+        }
+
+        ResponseObject HandleRequest(object req, ApiClient client);
     }
 }
 
