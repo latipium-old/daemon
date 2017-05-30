@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 
 namespace Com.Latipium.Daemon.Platform.Unix {
     internal partial class Native {
+#pragma warning disable 0649
         protected struct exit_status {
             public short e_termination;
             public short e_exit;
@@ -57,6 +58,7 @@ namespace Com.Latipium.Daemon.Platform.Unix {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
             public char[] __unused;
         }
+#pragma warning restore 0649
     }
 }
 
