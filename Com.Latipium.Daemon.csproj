@@ -99,6 +99,9 @@
     <Compile Include="Com\Latipium\Daemon\Model\DaemonVersion.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\StartSessionResponse.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\StartApi.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\WebSocketRequest.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\WebSocketTask.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\WebSocketResponse.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

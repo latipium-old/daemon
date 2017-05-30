@@ -28,7 +28,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.WebSockets;
 using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Com.Latipium.Daemon.Apis;
 using Com.Latipium.Daemon.Model;
@@ -36,9 +40,11 @@ using Com.Latipium.Daemon.Model;
 namespace Com.Latipium.Daemon {
     public class DaemonWebServer : IDisposable {
         private const string DefaultUrl = "http://localhost:43475/";
+        private const int MaxReceiveSize = 8192;
         private HttpListener Listener;
         private Dictionary<string, IApi> Apis;
         private Dictionary<Guid, ApiClient> Clients;
+        private CancellationTokenSource CancellationTokenSource;
 
         public void Dispose() {
             Dispose(true);
@@ -51,6 +57,7 @@ namespace Com.Latipium.Daemon {
                 }
                 Listener.Close();
                 ((IDisposable) Listener).Dispose();
+                CancellationTokenSource.Cancel();
             }
         }
 
@@ -83,11 +90,47 @@ namespace Com.Latipium.Daemon {
             return JsonConvert.SerializeObject(result);
         }
 
-        private void GetContextCallback(IAsyncResult iar) {
+        private void WebsocketRead(Task<WebSocketReceiveResult> task, WebSocket ws, ArraySegment<byte> buffer) {
+            switch (task.Result.MessageType) {
+                case WebSocketMessageType.Binary:
+                    ws.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Binary messages are not supported", CancellationTokenSource.Token);
+                    break;
+                case WebSocketMessageType.Text:
+                    if (task.Result.EndOfMessage) {
+                        string message = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, task.Result.Count);
+                        WebSocketRequest req = JsonConvert.DeserializeObject<WebSocketRequest>(message);
+                        ApiClient client = Clients.ContainsKey(req.ClientId) ? Clients[req.ClientId].Ping() : null;
+                        WebSocketResponse res = new WebSocketResponse() {
+                            Responses = new string[req.Tasks.Length]
+                        };
+                        for (int i = 0; i < req.Tasks.Length; ++i) {
+                            res.Responses[i] = Handle(req.Tasks[i].Url, req.Tasks[i].Request, client);
+                        }
+                        ArraySegment<byte> sendBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(res)));
+                        ws.SendAsync(sendBuffer, WebSocketMessageType.Text, true, CancellationTokenSource.Token).ContinueWith(t => {
+                            if (!t.IsCanceled && !t.IsFaulted) {
+                                ws.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(tsk => WebsocketRead(tsk, ws, buffer));
+                            }
+                        });
+                    } else {
+                        ws.CloseAsync(WebSocketCloseStatus.MessageTooBig, "Message too big", CancellationTokenSource.Token);
+                    }
+                    break;
+                case WebSocketMessageType.Close:
+                    ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client closed", CancellationTokenSource.Token);
+                    break;
+            }
+        }
+
+        private async void GetContextCallback(IAsyncResult iar) {
             HttpListenerContext ctx = Listener.EndGetContext(iar);
             Listener.BeginGetContext(GetContextCallback, null);
             if (ctx.Request.IsWebSocketRequest) {
-                // TODO
+                HttpListenerWebSocketContext wsctx = await ctx.AcceptWebSocketAsync("latipium");
+                ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[MaxReceiveSize]);
+#pragma warning disable 4014
+                wsctx.WebSocket.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(task => WebsocketRead(task, wsctx.WebSocket, buffer));
+#pragma warning restore 4014
             } else {
                 string request;
                 using (TextReader reader = new StreamReader(ctx.Request.InputStream)) {
@@ -114,6 +157,7 @@ namespace Com.Latipium.Daemon {
                 api.Server = this;
             }
             Clients = new Dictionary<Guid, ApiClient>();
+            CancellationTokenSource = new CancellationTokenSource();
             Listener.Start();
             Listener.BeginGetContext(GetContextCallback, null);
         }
