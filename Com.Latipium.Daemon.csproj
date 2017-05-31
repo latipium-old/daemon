@@ -55,15 +55,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Package>monodevelop</Package>
-    </Reference>
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Com.Latipium.Daemon.Api">
-      <HintPath>packages\Com.Latipium.Daemon.Api.0.0.40.2\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\Com.Latipium.Daemon.Api.0.0.45.10\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
