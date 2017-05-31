@@ -41,10 +41,12 @@ namespace Com.Latipium.Daemon.Platform.Unix {
             string oldFile = psi.FileName;
             string oldDisplay = psi.EnvironmentVariables.ContainsKey("DISPLAY") ? psi.EnvironmentVariables["DISPLAY"] : null;
             string oldAuth = psi.EnvironmentVariables.ContainsKey("XAUTHORITY") ? psi.EnvironmentVariables["XAUTHORITY"] : null;
-            psi.Arguments = string.Concat("-c \"mono '", psi.FileName, "' ", psi.Arguments.Replace("\\", "\\\\").Replace("\"", "\\\""), "\"");
+            string oldPath = psi.EnvironmentVariables["PATH"];
+            psi.Arguments = string.Concat("-c \"mono '", psi.FileName, "' ", psi.Arguments.Replace("\\", "\\\\").Replace("\"", "\\\""), "\" ", display.User);
             psi.FileName = "/bin/su";
             psi.EnvironmentVariables["DISPLAY"] = display.Display;
             psi.EnvironmentVariables["XAUTHORITY"] = display.Authority;
+            psi.EnvironmentVariables["MONO_PATH"] = psi.EnvironmentVariables["PATH"] = oldPath.Replace(';', ':');
             psi.UseShellExecute = false;
             Process proc = Process.Start(psi);
             psi.Arguments = oldArgs;
@@ -59,6 +61,8 @@ namespace Com.Latipium.Daemon.Platform.Unix {
             } else {
                 psi.EnvironmentVariables["XAUTHORITY"] = oldAuth;
             }
+            psi.EnvironmentVariables["PATH"] = oldPath;
+            psi.EnvironmentVariables.Remove("MONO_PATH");
             string pidStr;
             do {
                 pidStr = File.ReadAllText(string.Format("/proc/{0}/task/{0}/children", proc.Id)).Trim();
