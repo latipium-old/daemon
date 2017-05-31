@@ -36,11 +36,11 @@ using Com.Latipium.Daemon.Platform;
 
 namespace Com.Latipium.Daemon.Apis {
     public class LoadModuleApi : AbstractApi<LoadModuleRequest, ResponseObject> {
-        private const string NuGetDownload = "https://api.nuget.org/downloads/nuget.exe";
+        private const string NuGetDownload = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
 
         private IEnumerable<Version> GetInstalledVersions(string moduleName, ApiClient client) {
             string prefix = string.Concat(moduleName, ".");
-            return Directory.GetDirectories(client.LatipiumDir).Where(d => d.StartsWith(prefix)).Select(s => {
+            return Directory.GetDirectories(client.LatipiumDir).Select(d => Path.GetFileName(d)).Where(d => d.StartsWith(prefix)).Select(s => {
                 Version version = null;
                 Version.TryParse(s.Substring(prefix.Length), out version);
                 return version;
@@ -92,15 +92,20 @@ namespace Com.Latipium.Daemon.Apis {
                 moduleClient.Display = client.Display;
                 moduleClient.LoadedModules = client.LoadedModules;
                 psi.Arguments = string.Concat("\"", Server.BaseUrl, "\" ", moduleClient.Id.ToString());
-                psi.FileName = exes.First();
                 UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-                psi.WorkingDirectory = Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path));
+                psi.EnvironmentVariables["PATH"] = string.Concat(Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path)), ";", Environment.GetEnvironmentVariable("PATH"));
+                psi.FileName = exes.First();
+                psi.WorkingDirectory = client.LatipiumDir;
                 Process proc = PlatformFactory.Proxy.Start(psi, client.Display);
                 proc.Exited += (sender, e) => {
                     moduleClient.TimeOut();
                     client.LoadedModules.Remove(req.ModuleName);
                 };
-                moduleClient.Deleted += () => proc.Kill();
+                moduleClient.Deleted += () => {
+                    if (!proc.HasExited) {
+                        proc.Kill();
+                    }
+                };
                 client.LoadedModules[req.ModuleName] = moduleClient.Id;
                 return new ResponseObject();
             }
