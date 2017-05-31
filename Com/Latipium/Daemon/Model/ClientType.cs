@@ -1,5 +1,5 @@
 ﻿//
-// StartApi.cs
+// ClientType.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,29 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Com.Latipium.Daemon.Api.Model;
-using Com.Latipium.Daemon.Model;
-using Com.Latipium.Daemon.Platform;
 
-namespace Com.Latipium.Daemon.Apis {
-    public class StartApi : AbstractApi<object, StartSessionResponse> {
-        public override StartSessionResponse Handle(object req, ApiClient client) {
-            if (client == null) {
-                client = Server.RegisterClient();
-            }
-            DisplayDetectData display = PlatformFactory.Proxy.DetectDisplay(client.Id.ToString());
-            if (display.Detected) {
-                client.Display = display;
-            }
-            client.Type = ClientType.Launcher;
-            return new StartSessionResponse() {
-                Display = display,
-                ClientId = client.Id
-            };
-        }
-
-        public StartApi() : base("/session/start") {
-        }
+namespace Com.Latipium.Daemon.Model {
+    public enum ClientType {
+        Launcher,
+        Module
     }
 }
 

@@ -91,6 +91,7 @@ namespace Com.Latipium.Daemon.Apis {
                 ApiClient moduleClient = Server.RegisterClient();
                 moduleClient.Display = client.Display;
                 moduleClient.LoadedModules = client.LoadedModules;
+                moduleClient.Type = ClientType.Module;
                 psi.Arguments = string.Concat("\"", Server.BaseUrl, "\" ", moduleClient.Id.ToString());
                 UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
                 psi.EnvironmentVariables["PATH"] = string.Concat(Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path)), ";", Environment.GetEnvironmentVariable("PATH"));

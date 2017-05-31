@@ -37,6 +37,7 @@ namespace Com.Latipium.Daemon.Model {
         private CancellationTokenSource CancellationTokenSource = null;
         public event Action Deleted;
         public Guid Id = Guid.NewGuid();
+        public ClientType Type;
         private DisplayDetectData _Display;
         public DisplayDetectData Display {
             get {
