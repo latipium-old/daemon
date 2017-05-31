@@ -152,7 +152,7 @@ namespace Com.Latipium.Daemon {
                     }
                     Guid clientId = Guid.Empty;
                     Guid.TryParse(ctx.Request.Headers["X-Latipium-Client-Id"] ?? "", out clientId);
-                    string response = Handle(ctx.Request.Url.AbsolutePath, request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
+                    string response = Handle(ctx.Request.Url.AbsolutePath.Replace("//", "/"), request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
                     ctx.Response.ContentType = "application/json";
                     using (TextWriter writer = new StreamWriter(ctx.Response.OutputStream)) {
                         writer.Write(response);
