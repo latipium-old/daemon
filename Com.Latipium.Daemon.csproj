@@ -98,8 +98,11 @@
     <Compile Include="Com\Latipium\Daemon\Apis\LoadModuleApi.cs" />
     <Compile Include="Com\Latipium\Daemon\ClientException.cs" />
     <Compile Include="Com\Latipium\Daemon\ModuleException.cs" />
+    <Compile Include="Com\Latipium\Daemon\Apis\ModuleServiceApi.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\ClientType.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\ModuleTask.cs" />
+    <Compile Include="Com\Latipium\Daemon\Apis\GetModuleWorkApi.cs" />
+    <Compile Include="Com\Latipium\Daemon\Apis\FinishModuleWorkApi.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

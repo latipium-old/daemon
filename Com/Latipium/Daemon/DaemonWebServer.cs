@@ -75,6 +75,10 @@ namespace Com.Latipium.Daemon {
             return client.Ping();
         }
 
+        public ApiClient GetClient(Guid id) {
+            return Clients.ContainsKey(id) ? Clients[id] : null;
+        }
+
         private string Handle(string url, string request, ApiClient client) {
             ResponseObject result;
             if (Apis.ContainsKey(url)) {
