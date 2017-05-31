@@ -48,6 +48,9 @@ namespace Com.Latipium.Daemon.Platform.Unix {
 
         [DllImport("libc")]
         public static extern void endpwent();
+
+        [DllImport("libc")]
+        public static extern int chown(string pathname, int owner, int group);
     }
 }
 

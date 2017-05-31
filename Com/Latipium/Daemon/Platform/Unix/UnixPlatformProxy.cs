@@ -198,6 +198,7 @@ namespace Com.Latipium.Daemon.Platform.Unix {
                 if (Marshal.PtrToStringAuto(passwd.pw_name) == user) {
                     string dir = Path.Combine(Marshal.PtrToStringAuto(passwd.pw_dir), ".latipium");
                     Directory.CreateDirectory(dir);
+                    chown(dir, passwd.pw_uid, passwd.pw_gid);
                     endpwent();
                     return dir;
                 }
