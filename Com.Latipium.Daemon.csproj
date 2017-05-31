@@ -99,6 +99,7 @@
     <Compile Include="Com\Latipium\Daemon\ClientException.cs" />
     <Compile Include="Com\Latipium\Daemon\ModuleException.cs" />
     <Compile Include="Com\Latipium\Daemon\Model\ClientType.cs" />
+    <Compile Include="Com\Latipium\Daemon\Model\ModuleTask.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

@@ -53,6 +53,7 @@ namespace Com.Latipium.Daemon.Model {
             private set;
         }
         public Dictionary<string, Guid> LoadedModules = new Dictionary<string, Guid>();
+        public Dictionary<Guid, ModuleTask> ToDoList = new Dictionary<Guid, ModuleTask>();
 
         public void TimeOut() {
             if (Deleted != null) {
