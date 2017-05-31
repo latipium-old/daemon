@@ -47,6 +47,10 @@ namespace Com.Latipium.Daemon {
         private Dictionary<Guid, ApiClient> Clients;
         private CancellationTokenSource CancellationTokenSource;
         public readonly string BaseUrl;
+        public bool IsRunning {
+            get;
+            private set;
+        }
 
         public void Dispose() {
             Dispose(true);
@@ -54,6 +58,7 @@ namespace Com.Latipium.Daemon {
 
         protected void Dispose(bool disposing) {
             if (disposing) {
+                IsRunning = false;
                 if (Listener.IsListening) {
                     Listener.Stop();
                 }
@@ -77,6 +82,9 @@ namespace Com.Latipium.Daemon {
                     IApi api = Apis[url];
                     result = api.HandleRequest(JsonConvert.DeserializeObject(request, api.RequestType), client);
                 } catch (ClientException ex) {
+                    WindowsService.WriteLog(ex);
+                    result = ex.Error;
+                } catch (ModuleException ex) {
                     WindowsService.WriteLog(ex);
                     result = ex.Error;
                 } catch (Exception ex) {
@@ -128,27 +136,29 @@ namespace Com.Latipium.Daemon {
         }
 
         private async void GetContextCallback(IAsyncResult iar) {
-            HttpListenerContext ctx = Listener.EndGetContext(iar);
-            Listener.BeginGetContext(GetContextCallback, null);
-            if (ctx.Request.IsWebSocketRequest) {
-                HttpListenerWebSocketContext wsctx = await ctx.AcceptWebSocketAsync("latipium");
-                ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[MaxReceiveSize]);
+            if (IsRunning) {
+                HttpListenerContext ctx = Listener.EndGetContext(iar);
+                Listener.BeginGetContext(GetContextCallback, null);
+                if (ctx.Request.IsWebSocketRequest) {
+                    HttpListenerWebSocketContext wsctx = await ctx.AcceptWebSocketAsync("latipium");
+                    ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[MaxReceiveSize]);
 #pragma warning disable 4014
-                wsctx.WebSocket.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(task => WebsocketRead(task, wsctx.WebSocket, buffer));
+                    wsctx.WebSocket.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(task => WebsocketRead(task, wsctx.WebSocket, buffer));
 #pragma warning restore 4014
-            } else {
-                string request;
-                using (TextReader reader = new StreamReader(ctx.Request.InputStream)) {
-                    request = reader.ReadToEnd();
+                } else {
+                    string request;
+                    using (TextReader reader = new StreamReader(ctx.Request.InputStream)) {
+                        request = reader.ReadToEnd();
+                    }
+                    Guid clientId = Guid.Empty;
+                    Guid.TryParse(ctx.Request.Headers["X-Latipium-Client-Id"] ?? "", out clientId);
+                    string response = Handle(ctx.Request.Url.AbsolutePath, request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
+                    ctx.Response.ContentType = "application/json";
+                    using (TextWriter writer = new StreamWriter(ctx.Response.OutputStream)) {
+                        writer.Write(response);
+                    }
+                    ctx.Response.Close();
                 }
-                Guid clientId = Guid.Empty;
-                Guid.TryParse(ctx.Request.Headers["X-Latipium-Client-Id"] ?? "", out clientId);
-                string response = Handle(ctx.Request.Url.AbsolutePath, request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
-                ctx.Response.ContentType = "application/json";
-                using (TextWriter writer = new StreamWriter(ctx.Response.OutputStream)) {
-                    writer.Write(response);
-                }
-                ctx.Response.Close();
             }
         }
 
@@ -165,6 +175,7 @@ namespace Com.Latipium.Daemon {
             CancellationTokenSource = new CancellationTokenSource();
             Listener.Start();
             Listener.BeginGetContext(GetContextCallback, null);
+            IsRunning = true;
         }
 
         public DaemonWebServer() {
