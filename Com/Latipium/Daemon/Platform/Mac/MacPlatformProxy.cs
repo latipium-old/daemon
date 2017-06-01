@@ -81,16 +81,7 @@ namespace Com.Latipium.Daemon.Platform.Mac {
         }
 
         public string FindLatipiumDir(string user) {
-            IntPtr username = IntPtr.Zero;
-            string home;
-            try {
-                username = objc_msgSend(NSString, stringWithUTF8String, user);
-                home = Marshal.PtrToStringAuto(objc_msgSend(NSHomeDirectoryForUser(username), cStringUsingEncoding, NSUTF8StringEncoding));
-            } finally {
-                if (username != IntPtr.Zero) {
-                    objc_msgSend(username, release);
-                }
-            }
+            string home = Marshal.PtrToStringAuto(objc_msgSend(NSHomeDirectoryForUser(objc_msgSend(NSString, stringWithUTF8String, user)), cStringUsingEncoding, NSUTF8StringEncoding));
             IntPtr passwdPtr = getpwnam(user);
             passwd passwd = (passwd) Marshal.PtrToStructure(passwdPtr, typeof(passwd));
             string dir = Path.Combine(home, "Library", "Application Support", "latipium");

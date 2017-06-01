@@ -32,9 +32,6 @@ namespace Com.Latipium.Daemon.Platform.Mac {
         public static extern IntPtr NSHomeDirectoryForUser(IntPtr userName);
 
         [DllImport("/usr/lib/libobjc.dylib")]
-        public static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector);
-
-        [DllImport("/usr/lib/libobjc.dylib")]
         public static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, string arg1);
 
         [DllImport("/usr/lib/libobjc.dylib")]
@@ -51,7 +48,6 @@ namespace Com.Latipium.Daemon.Platform.Mac {
 
         public static readonly IntPtr stringWithUTF8String = sel_registerName("stringWithUTF8String:");
         public static readonly IntPtr cStringUsingEncoding = sel_registerName("cStringUsingEncoding:");
-        public static readonly IntPtr release = sel_registerName("release");
     }
 }
 
