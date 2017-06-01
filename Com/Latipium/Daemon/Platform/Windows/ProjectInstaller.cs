@@ -1,10 +1,10 @@
-//
-// AssemblyInfo.cs
+﻿//
+// ProjectInstaller.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
 //
-// Copyright (c) 2016 Latipium
+// Copyright (c) 2017 Zach Deibert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security;
+using System.ComponentModel;
 
-[assembly: AssemblyTitle("Com.Latipium.Daemon")]
-[assembly: AssemblyDescription("The daemon the website will connect to in order to launch Latipium")]
-[assembly: AssemblyCompany("Latipium")]
-[assembly: AssemblyProduct("Latipium Launcher Daemon")]
-[assembly: AssemblyCopyright("Latipium")]
-
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-#elif BETA
-[assembly: AssemblyConfiguration("Release (Beta)")]
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AllowPartiallyTrustedCallers]
-[assembly: CLSCompliant(true)]
-[assembly: SecurityRules(SecurityRuleSet.Level1)]
+namespace Com.Latipium.Daemon.Platform.Windows {
+    [RunInstaller(true)]
+    public partial class ProjectInstaller : System.Configuration.Install.Installer {
+        public ProjectInstaller() {
+            InitializeComponent();
+        }
+    }
+}

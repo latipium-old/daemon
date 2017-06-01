@@ -180,6 +180,7 @@ namespace Com.Latipium.Daemon {
             Listener.Start();
             Listener.BeginGetContext(GetContextCallback, null);
             IsRunning = true;
+            WindowsService.WriteLog(string.Concat("Running service on ", BaseUrl));
         }
 
         public DaemonWebServer() {

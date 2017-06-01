@@ -28,25 +28,16 @@ using System.Diagnostics;
 using System.ServiceProcess;
 
 namespace Com.Latipium.Daemon {
-    /// <summary>
-    /// Windows service.
-    /// </summary>
-    public class WindowsService : ServiceBase {
-        private static EventLog Log;
-
-        /// <summary>
-        /// Raises the start event.
-        /// </summary>
-        /// <param name="args">Arguments.</param>
-        protected override void OnStart(string[] args) {
-            Log = EventLog;
-        }
+    partial class WindowsService : ServiceBase {
+        private static WindowsService Instance;
+        public static event Action SessionChange;
+        private DaemonWebServer Server;
 
         internal static void WriteLog(string message) {
-            if (Log == null) {
+            if (Instance == null) {
                 Console.WriteLine(message);
             } else {
-                Log.WriteEntry(message);
+                Instance.Log.WriteEntry(message);
             }
         }
 
@@ -54,11 +45,31 @@ namespace Com.Latipium.Daemon {
             WriteLog(ex.ToString());
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Com.Latipium.Daemon.WindowsService"/> class.
-        /// </summary>
+        protected override void OnStart(string[] args) {
+            Instance = this;
+            Server = new DaemonWebServer();
+            Server.Start();
+        }
+
+        protected override void OnStop() {
+            Server.Dispose();
+            Server = null;
+            Instance = null;
+        }
+
+        protected override void OnShutdown() {
+            Stop();
+        }
+
+        protected override void OnSessionChange(SessionChangeDescription changeDescription) {
+            SessionChange?.Invoke();
+        }
+
         public WindowsService() {
+            if (!EventLog.SourceExists("Latipium")) {
+                EventLog.CreateEventSource("Latipium", "Application");
+            }
+            InitializeComponent();
         }
     }
 }
-
