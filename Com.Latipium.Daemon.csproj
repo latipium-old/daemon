@@ -77,6 +77,10 @@
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\ConfirmDialog.Designer.cs">
       <DependentUpon>ConfirmDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Com\Latipium\Daemon\Platform\Windows\Enums.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Windows\Structs.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Windows\Constants.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Windows\Methods.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\IPlatformProxy.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\UnixPlatformProxy.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\PlatformFactory.cs" />
