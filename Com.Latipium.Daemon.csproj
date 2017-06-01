@@ -64,7 +64,6 @@
     </Reference>
     <Reference Include="Com.Latipium.Daemon.Api">
       <HintPath>$(SolutionDir)\packages\Com.Latipium.Daemon.Api.0.0.48.7\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +106,7 @@
     <Compile Include="Com\Latipium\Daemon\Apis\FinishModuleWorkApi.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Mac\Methods.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Mac\Classes.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Windows\WindowsPlatformProxy.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -126,5 +126,6 @@
   <ItemGroup>
     <Folder Include="Com\Latipium\Daemon\Platform\Mac\" />
     <Folder Include="Com\Latipium\Daemon\Apis\" />
+    <Folder Include="Com\Latipium\Daemon\Platform\Windows\" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 ﻿//
-// PlatformFactory.cs
+// WindowsPlatformProxy.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,35 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Com.Latipium.Daemon.Platform.Mac;
-using Com.Latipium.Daemon.Platform.Unix;
-using Com.Latipium.Daemon.Platform.Windows;
+using System.Diagnostics;
+using Com.Latipium.Daemon.Api.Model;
 
-namespace Com.Latipium.Daemon.Platform {
-    internal static class PlatformFactory {
-        private static IPlatformProxy Instance = null;
+namespace Com.Latipium.Daemon.Platform.Windows {
+    public class WindowsPlatformProxy : IPlatformProxy {
+        public DisplayDetectData DetectDisplay(string id) {
+            return new DisplayDetectData();
+        }
 
-        public static IPlatformProxy Proxy {
-            get {
-                if (Instance == null) {
-                    switch (Environment.OSVersion.Platform) {
-                        case PlatformID.Unix:
-                            if (UnixPlatformProxy.IsActuallyMac()) {
-                                Instance = new MacPlatformProxy();
-                            } else {
-                                Instance = new UnixPlatformProxy();
-                            }
-                            break;
-                        case PlatformID.MacOSX:
-                            Instance = new MacPlatformProxy();
-                            break;
-                        default:
-                            Instance = new WindowsPlatformProxy();
-                            break;
-                    }
-                }
-                return Instance;
-            }
+        public Process Start(ProcessStartInfo psi, DisplayDetectData display) {
+            return Process.Start(psi);
+        }
+
+        public string FindLatipiumDir(string user) {
+            return null;
         }
     }
 }
