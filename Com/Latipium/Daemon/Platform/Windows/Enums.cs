@@ -30,5 +30,9 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         public enum TOKEN_INFORMATION_CLASS {
             TokenUser = 1
         }
+
+        public static class KNOWNFOLDERID {
+            public static readonly Guid RoamingAppData = new Guid(0x3EB685DB, 0x65F9, 0x4CF6, 0xA0, 0x3A, 0xE3, 0xEF, 0x65, 0x72, 0x9F, 0x3D);
+        }
     }
 }

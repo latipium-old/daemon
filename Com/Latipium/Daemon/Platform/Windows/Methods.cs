@@ -54,6 +54,9 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         [DllImport("Advapi32.dll", SetLastError = true)]
         public static extern bool LookupAccountSid(string lpSystemName, IntPtr lpSid, StringBuilder lpName, ref uint cchName, StringBuilder lpReferencedDomainName, ref uint cchReferencedDomainName, [Out] out int peUse);
 
+        [DllImport("Shell32.dll")]
+        public static extern uint SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr ppszPath);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ushort MAKELANGID(ushort p, ushort s) {
             return (ushort)((s << 10) | p);

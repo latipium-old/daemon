@@ -25,7 +25,11 @@
 // THE SOFTWARE.
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using Com.Latipium.Daemon.Api.Model;
 
@@ -43,6 +47,23 @@ namespace Com.Latipium.Daemon.Platform.Windows {
             }
         }
 
+        private IntPtr AccessToken {
+            get {
+                uint session = WTSGetActiveConsoleSessionId();
+                if (session == 0xFFFFFFFF) {
+                    Error("WTSGetActiveConsoleSessionId");
+                } else {
+                    IntPtr accessToken;
+                    if (WTSQueryUserToken(session, out accessToken)) {
+                        return accessToken;
+                    } else {
+                        Error("WTSQueryUserToken");
+                    }
+                }
+                return IntPtr.Zero;
+            }
+        }
+
         private void Error(string function) {
             int error = Marshal.GetLastWin32Error();
             string message;
@@ -50,48 +71,54 @@ namespace Com.Latipium.Daemon.Platform.Windows {
             WindowsService.WriteLog(string.Format("Error in {0}: {1} ({2})", function, message, error));
         }
 
-        public DisplayDetectData DetectDisplay(string id) {
-            if (IsService) {
-                uint session = WTSGetActiveConsoleSessionId();
-                if (session == 0xFFFFFFFF) {
-                    Error("WTSGetActiveConsoleSessionId");
-                } else {
-                    IntPtr accessToken;
-                    if (WTSQueryUserToken(session, out accessToken)) {
-                        try {
-                            uint tokenInfoSize = 0;
-                            if (GetTokenInformation(accessToken, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, tokenInfoSize, out tokenInfoSize) || Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER) {
-                                IntPtr tokenInfo = Marshal.AllocHGlobal((int) tokenInfoSize);
-                                try {
-                                    if (GetTokenInformation(accessToken, TOKEN_INFORMATION_CLASS.TokenUser, tokenInfo, tokenInfoSize, out tokenInfoSize)) {
-                                        TOKEN_USER user = (TOKEN_USER) Marshal.PtrToStructure(tokenInfo, typeof(TOKEN_USER));
-                                        uint usernameSize = UNLEN + 1;
-                                        StringBuilder username = new StringBuilder((int) usernameSize);
-                                        uint domainSize = DNLEN + 1;
-                                        StringBuilder domain = new StringBuilder((int) domainSize);
-                                        int peUse;
-                                        if (LookupAccountSid(null, user.User.Sid, username, ref usernameSize, domain, ref domainSize, out peUse)) {
-                                            return new DisplayDetectData() {
-                                                Detected = true,
-                                                User = string.Concat(domain.ToString(), "\\", username.ToString())
-                                            };
-                                        } else {
-                                            Error("LookupAccountSid");
-                                        }
-                                    } else {
-                                        Error("GetTokenInformation");
-                                    }
-                                } finally {
-                                    Marshal.FreeHGlobal(tokenInfo);
-                                }
-                            } else {
-                                Error("GetTokenInformation");
-                            }
-                        } finally {
-                            CloseHandle(accessToken);
+        private bool GetUser(IntPtr accessToken, out string username, out string domain) {
+            uint tokenInfoSize = 0;
+            if (GetTokenInformation(accessToken, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, tokenInfoSize, out tokenInfoSize) || Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER) {
+                IntPtr tokenInfo = Marshal.AllocHGlobal((int)tokenInfoSize);
+                try {
+                    if (GetTokenInformation(accessToken, TOKEN_INFORMATION_CLASS.TokenUser, tokenInfo, tokenInfoSize, out tokenInfoSize)) {
+                        TOKEN_USER user = (TOKEN_USER)Marshal.PtrToStructure(tokenInfo, typeof(TOKEN_USER));
+                        uint usernameSize = UNLEN + 1;
+                        StringBuilder usernameBuffer = new StringBuilder((int)usernameSize);
+                        uint domainSize = DNLEN + 1;
+                        StringBuilder domainBuffer = new StringBuilder((int)domainSize);
+                        int peUse;
+                        if (LookupAccountSid(null, user.User.Sid, usernameBuffer, ref usernameSize, domainBuffer, ref domainSize, out peUse)) {
+                            username = usernameBuffer.ToString();
+                            domain = domainBuffer.ToString();
+                            return true;
+                        } else {
+                            Error("LookupAccountSid");
                         }
                     } else {
-                        Error("WTSQueryUserToken");
+                        Error("GetTokenInformation");
+                    }
+                } finally {
+                    Marshal.FreeHGlobal(tokenInfo);
+                }
+            } else {
+                Error("GetTokenInformation");
+            }
+            username = null;
+            domain = null;
+            return false;
+        }
+
+        public DisplayDetectData DetectDisplay(string id) {
+            if (IsService) {
+                IntPtr accessToken = AccessToken;
+                if (accessToken != IntPtr.Zero) {
+                    try {
+                        string username;
+                        string domain;
+                        if (GetUser(accessToken, out username, out domain)) {
+                            return new DisplayDetectData() {
+                                Detected = true,
+                                User = string.Concat(domain, "\\", username)
+                            };
+                        }
+                    } finally {
+                        CloseHandle(accessToken);
                     }
                 }
                 return new DisplayDetectData();
@@ -108,6 +135,44 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         }
 
         public string FindLatipiumDir(string user) {
+            IntPtr accessToken = AccessToken;
+            try {
+                IntPtr path;
+                uint error = SHGetKnownFolderPath(KNOWNFOLDERID.RoamingAppData, 0, accessToken, out path);
+                switch (error) {
+                    case S_OK:
+                        try {
+                            string dir = Path.Combine(Marshal.PtrToStringAuto(path), "latipium");
+                            Directory.CreateDirectory(dir);
+                            string username;
+                            string domain;
+                            if (GetUser(accessToken, out username, out domain)) {
+                                NTAccount account = new NTAccount(domain, username);
+                                DirectorySecurity acl = Directory.GetAccessControl(dir);
+                                if (!acl.GetAccessRules(true, true, typeof(NTAccount)).OfType<FileSystemAccessRule>()
+                                    .Any(r => r.IdentityReference == account && r.FileSystemRights == FileSystemRights.FullControl && r.AccessControlType == AccessControlType.Allow)) {
+                                    acl.AddAccessRule(new FileSystemAccessRule(account, FileSystemRights.FullControl, AccessControlType.Allow));
+                                }
+                                Directory.SetAccessControl(dir, acl);
+                            }
+                            return dir;
+                        } finally {
+                            Marshal.FreeCoTaskMem(path);
+                        }
+                        break;
+                    case E_FAIL:
+                        WindowsService.WriteLog("Error in SHGetKnownFolderPath: Unspecified failure (2147500037)");
+                        break;
+                    case E_INVALIDARG:
+                        WindowsService.WriteLog("Error in SHGetKnownFolderPath: One or more arguments are not valid (2147942487)");
+                        break;
+                    default:
+                        WindowsService.WriteLog(string.Format("Error in SHGetKnownFolderPath: ({0})", error));
+                        break;
+                }
+            } finally {
+                CloseHandle(accessToken);
+            }
             return null;
         }
     }

@@ -35,5 +35,8 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         public const int DNLEN = 15;
         public const int UNLEN = 256;
         public const int ERROR_INSUFFICIENT_BUFFER = 122;
+        public const uint S_OK = 0x00000000;
+        public const uint E_FAIL = 0x80004005;
+        public const uint E_INVALIDARG = 0x80070057;
     }
 }
