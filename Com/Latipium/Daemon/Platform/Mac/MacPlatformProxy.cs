@@ -56,14 +56,19 @@ namespace Com.Latipium.Daemon.Platform.Mac {
         public Process Start(ProcessStartInfo psi, DisplayDetectData display) {
             string oldArgs = psi.Arguments;
             string oldFile = psi.FileName;
-            psi.Arguments = string.Concat("-c \"mono '", psi.FileName, "' ", psi.Arguments.Replace("\\", "\\\\").Replace("\"", "\\\""), "\"");
-            psi.FileName = "/bin/su";
+            string oldPath = psi.EnvironmentVariables["PATH"];
+            psi.Arguments = string.Concat(display.User, " -c \"mono '", psi.FileName, "' ", psi.Arguments.Replace("\\", "\\\\").Replace("\"", "\\\""), "\"");
+            psi.FileName = "/usr/bin/su";
             string id = new Random().Next().ToString();
             psi.EnvironmentVariables["LATIPIUM_DAEMON_SPAWN_ID"] = id;
+            psi.EnvironmentVariables["MONO_PATH"] = psi.EnvironmentVariables["PATH"] = oldPath.Replace(';', ':');
+            psi.UseShellExecute = false;
             Process proc = Process.Start(psi);
             psi.Arguments = oldArgs;
             psi.FileName = oldFile;
             psi.EnvironmentVariables.Remove("LATIPIUM_DAEMON_SPAWN_ID");
+            psi.EnvironmentVariables["PATH"] = oldPath;
+            psi.EnvironmentVariables.Remove("MONO_PATH");
             proc.EnableRaisingEvents = true;
             proc.Exited += (sender, e) => {
                 foreach (Process p in Process.GetProcesses()) {
