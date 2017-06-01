@@ -105,6 +105,8 @@
     <Compile Include="Com\Latipium\Daemon\Model\ModuleTask.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\GetModuleWorkApi.cs" />
     <Compile Include="Com\Latipium\Daemon\Apis\FinishModuleWorkApi.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Mac\Methods.cs" />
+    <Compile Include="Com\Latipium\Daemon\Platform\Mac\Classes.cs" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

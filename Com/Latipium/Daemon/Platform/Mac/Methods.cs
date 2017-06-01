@@ -1,5 +1,5 @@
 ﻿//
-// Constants.cs
+// Methods.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -24,14 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Runtime.InteropServices;
 
 namespace Com.Latipium.Daemon.Platform.Mac {
     internal partial class Native {
-        protected const int _UTX_USERSIZE = 256;
-        protected const int _UTX_IDSIZE = 4;
-        protected const int _UTX_LINESIZE = 32;
-        protected const int _UTX_HOSTSIZE = 256;
-        protected const uint NSUTF8StringEncoding = 4;
+        [DllImport("/System/Library/Frameworks/Foundation.framework/Foundation")]
+        public static extern IntPtr NSHomeDirectoryForUser(IntPtr userName);
+
+        [DllImport("/usr/lib/libobjc.dylib")]
+        public static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector);
+
+        [DllImport("/usr/lib/libobjc.dylib")]
+        public static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, string arg1);
+
+        [DllImport("/usr/lib/libobjc.dylib")]
+        public static extern IntPtr objc_msgSend(IntPtr receiver, IntPtr selector, uint arg1);
+
+        [DllImport("/usr/lib/libobjc.dylib")]
+        public static extern IntPtr objc_getClass(string name);
+
+        [DllImport("/usr/lib/libobjc.dylib")]
+        public static extern IntPtr sel_registerName(string name);
+
+        [DllImport("libc")]
+        public static extern IntPtr getpwnam(string name);
+
+        public static readonly IntPtr stringWithUTF8String = sel_registerName("stringWithUTF8String:");
+        public static readonly IntPtr cStringUsingEncoding = sel_registerName("cStringUsingEncoding:");
+        public static readonly IntPtr release = sel_registerName("release");
     }
 }
 

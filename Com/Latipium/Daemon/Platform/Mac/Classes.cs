@@ -1,5 +1,5 @@
 ﻿//
-// Constants.cs
+// Classes.cs
 //
 // Author:
 //       Zach Deibert <zachdeibert@gmail.com>
@@ -27,11 +27,7 @@ using System;
 
 namespace Com.Latipium.Daemon.Platform.Mac {
     internal partial class Native {
-        protected const int _UTX_USERSIZE = 256;
-        protected const int _UTX_IDSIZE = 4;
-        protected const int _UTX_LINESIZE = 32;
-        protected const int _UTX_HOSTSIZE = 256;
-        protected const uint NSUTF8StringEncoding = 4;
+        public static readonly IntPtr NSString = objc_getClass("NSString");
     }
 }
 
