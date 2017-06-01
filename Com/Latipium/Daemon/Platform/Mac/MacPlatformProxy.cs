@@ -82,18 +82,13 @@ namespace Com.Latipium.Daemon.Platform.Mac {
 
         public string FindLatipiumDir(string user) {
             IntPtr username = IntPtr.Zero;
-            IntPtr homeDir = IntPtr.Zero;
             string home;
             try {
                 username = objc_msgSend(NSString, stringWithUTF8String, user);
-                homeDir = NSHomeDirectoryForUser(username);
-                home = Marshal.PtrToStringAuto(objc_msgSend(homeDir, cStringUsingEncoding, NSUTF8StringEncoding));
+                home = Marshal.PtrToStringAuto(objc_msgSend(NSHomeDirectoryForUser(username), cStringUsingEncoding, NSUTF8StringEncoding));
             } finally {
                 if (username != IntPtr.Zero) {
                     objc_msgSend(username, release);
-                }
-                if (homeDir != IntPtr.Zero) {
-                    objc_msgSend(homeDir, release);
                 }
             }
             IntPtr passwdPtr = getpwnam(user);
