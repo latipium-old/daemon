@@ -107,14 +107,32 @@ namespace Com.Latipium.Daemon {
             return JsonConvert.SerializeObject(result);
         }
 
-        private void WebsocketRead(Task<WebSocketReceiveResult> task, WebSocket ws, ArraySegment<byte> buffer) {
+        private void WebsocketSendPart(byte[] sendBuffer, int off, WebSocket ws, ArraySegment<byte> receiveBuffer) {
+            int left = sendBuffer.Length - off;
+            ws.SendAsync(new ArraySegment<byte>(sendBuffer, off, Math.Min(left, MaxReceiveSize)), WebSocketMessageType.Text, left <= MaxReceiveSize, CancellationTokenSource.Token).ContinueWith(t => {
+                if (!t.IsCanceled && !t.IsFaulted) {
+                    if (left <= MaxReceiveSize) {
+                        ws.ReceiveAsync(receiveBuffer, CancellationTokenSource.Token).ContinueWith(tsk => WebsocketRead(tsk, ws, receiveBuffer, null));
+                    } else {
+                        WebsocketSendPart(sendBuffer, off + MaxReceiveSize, ws, receiveBuffer);
+                    }
+                }
+            });
+        }
+
+        private void WebsocketRead(Task<WebSocketReceiveResult> task, WebSocket ws, ArraySegment<byte> buffer, List<byte[]> messageParts) {
             switch (task.Result.MessageType) {
                 case WebSocketMessageType.Binary:
                     ws.CloseAsync(WebSocketCloseStatus.InvalidMessageType, "Binary messages are not supported", CancellationTokenSource.Token);
                     break;
                 case WebSocketMessageType.Text:
                     if (task.Result.EndOfMessage) {
-                        string message = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, task.Result.Count);
+                        string message;
+                        if (messageParts == null) {
+                            message = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, task.Result.Count);
+                        } else {
+                            message = Encoding.UTF8.GetString(messageParts.SelectMany(a => a).Concat(buffer.Array.Skip(buffer.Offset).Take(task.Result.Count)).ToArray());
+                        }
                         WebSocketRequest req = JsonConvert.DeserializeObject<WebSocketRequest>(message);
                         ApiClient client = Clients.ContainsKey(req.ClientId) ? Clients[req.ClientId].Ping() : null;
                         WebSocketResponse res = new WebSocketResponse() {
@@ -123,14 +141,13 @@ namespace Com.Latipium.Daemon {
                         for (int i = 0; i < req.Tasks.Length; ++i) {
                             res.Responses[i] = Handle(req.Tasks[i].Url, req.Tasks[i].Request, client);
                         }
-                        ArraySegment<byte> sendBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(res)));
-                        ws.SendAsync(sendBuffer, WebSocketMessageType.Text, true, CancellationTokenSource.Token).ContinueWith(t => {
-                            if (!t.IsCanceled && !t.IsFaulted) {
-                                ws.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(tsk => WebsocketRead(tsk, ws, buffer));
-                            }
-                        });
+                        WebsocketSendPart(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(res)), 0, ws, buffer);
                     } else {
-                        ws.CloseAsync(WebSocketCloseStatus.MessageTooBig, "Message too big", CancellationTokenSource.Token);
+                        if (messageParts == null) {
+                            messageParts = new List<byte[]>();
+                        }
+                        messageParts.Add(buffer.Array.Skip(buffer.Offset).Take(task.Result.Count).ToArray());
+                        ws.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(tsk => WebsocketRead(tsk, ws, buffer, messageParts));
                     }
                     break;
                 case WebSocketMessageType.Close:
@@ -147,7 +164,7 @@ namespace Com.Latipium.Daemon {
                     HttpListenerWebSocketContext wsctx = await ctx.AcceptWebSocketAsync("latipium");
                     ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[MaxReceiveSize]);
 #pragma warning disable 4014
-                    wsctx.WebSocket.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(task => WebsocketRead(task, wsctx.WebSocket, buffer));
+                    wsctx.WebSocket.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(task => WebsocketRead(task, wsctx.WebSocket, buffer, null));
 #pragma warning restore 4014
                 } else {
                     string request;
