@@ -70,6 +70,9 @@ namespace Com.Latipium.Daemon.Apis {
                 }
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.Arguments = string.Concat("install \"", req.ModuleName, "\" -Version \"", req.Version.ToString(), "\"");
+#if !DEBUG
+                psi.CreateNoWindow = true;
+#endif
                 psi.FileName = nuget;
                 psi.WorkingDirectory = client.LatipiumDir;
                 Process proc = PlatformFactory.Proxy.Start(psi, client.Display);
@@ -93,6 +96,9 @@ namespace Com.Latipium.Daemon.Apis {
                 moduleClient.LoadedModules = client.LoadedModules;
                 moduleClient.Type = ClientType.Module;
                 psi.Arguments = string.Concat("WRAPPER_NUGET=true -- \"", exes.First(), "\" \"", Server.BaseUrl, "\" ", moduleClient.Id.ToString());
+#if !DEBUG
+                psi.CreateNoWindow = true;
+#endif
                 psi.FileName = Path.Combine(Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path)), "command-wrapper.exe");
                 psi.WorkingDirectory = client.LatipiumDir;
                 Process proc = PlatformFactory.Proxy.Start(psi, client.Display);
