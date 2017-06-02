@@ -38,5 +38,12 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         public const uint S_OK = 0x00000000;
         public const uint E_FAIL = 0x80004005;
         public const uint E_INVALIDARG = 0x80070057;
+        public const uint STARTF_USESHOWWINDOW = 0x00000001;
+        public const ushort SW_HIDE = 0;
+        public const ushort SW_MAXIMIZE = 3;
+        public const ushort SW_MINIMIZE = 6;
+        public const ushort SW_SHOWNORMAL = 1;
+        public const uint CREATE_NO_WINDOW = 0x08000000;
+        public const uint CREATE_UNICODE_ENVIRONMENT = 0x00000400;
     }
 }

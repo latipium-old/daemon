@@ -37,6 +37,40 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         public struct TOKEN_USER {
             public SID_AND_ATTRIBUTES User;
         }
+
+        public struct STARTUPINFO {
+            public uint cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public uint dwX;
+            public uint dwY;
+            public uint dwXSize;
+            public uint dwYSize;
+            public uint dwXCountChars;
+            public uint dwYCountChars;
+            public uint dwFillAttribute;
+            public uint dwFlags;
+            public ushort wShowWindow;
+            public ushort cbReserved2;
+            public byte lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        public struct PROCESS_INFORMATION {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public uint dwProcessId;
+            public uint dwThreadId;
+        }
+
+        public struct SECURITY_ATTRIBUTES {
+            public int nLength;
+            public IntPtr lpSecurityDescriptor;
+            public int bInheritHandle;
+        }
 #pragma warning restore 0649
     }
 }

@@ -57,6 +57,9 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         [DllImport("Shell32.dll")]
         public static extern uint SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr ppszPath);
 
+        [DllImport("Advapi32.dll", SetLastError = true)]
+        public static extern bool CreateProcessAsUser(IntPtr hToken, string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFO lpStartupInfo, [Out] out PROCESS_INFORMATION lpProcessInformation);
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ushort MAKELANGID(ushort p, ushort s) {
             return (ushort)((s << 10) | p);
