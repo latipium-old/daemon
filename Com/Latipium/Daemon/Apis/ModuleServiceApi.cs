@@ -51,6 +51,7 @@ namespace Com.Latipium.Daemon.Apis {
                 };
                 try {
                     Thread.Sleep(RequestTimeout);
+                    throw new ModuleException("Request timed out");
                 } catch (ThreadInterruptedException) {
                 }
                 return new ModuleServiceResponse() {
