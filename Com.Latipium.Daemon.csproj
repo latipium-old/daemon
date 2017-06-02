@@ -51,6 +51,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Com.Latipium.Daemon.Api, Version=0.0.50.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)\packages\Com.Latipium.Daemon.Api.0.0.50.2\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
+    </Reference>
     <Reference Include="command-wrapper">
       <HintPath>$(SolutionDir)\packages\CommandWrapper.2.2\bin\command-wrapper.exe</HintPath>
     </Reference>
@@ -66,9 +69,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Package>monodevelop</Package>
-    </Reference>
-    <Reference Include="Com.Latipium.Daemon.Api">
-      <HintPath>$(SolutionDir)\packages\Com.Latipium.Daemon.Api.0.0.48.7\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
