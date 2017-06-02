@@ -40,7 +40,7 @@ using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon {
     public class DaemonWebServer : IDisposable {
-        private const string DefaultUrl = "http://localhost:43475/";
+        private const string DefaultUrl = "http://+:43475/";
         private const int MaxReceiveSize = 8192;
         private HttpListener Listener;
         private Dictionary<string, IApi> Apis;

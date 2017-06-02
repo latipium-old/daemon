@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AssemblyVersion.cs" />
+    <Compile Include="Com\Latipium\Daemon\Apis\PingApi.cs" />
     <Compile Include="Com\Latipium\Daemon\Platform\Unix\ConfirmDialog.cs">
       <SubType>Form</SubType>
     </Compile>

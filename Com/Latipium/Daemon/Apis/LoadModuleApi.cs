@@ -92,6 +92,7 @@ namespace Com.Latipium.Daemon.Apis {
             {
                 ProcessStartInfo psi = new ProcessStartInfo();
                 ApiClient moduleClient = Server.RegisterClient();
+                client.Deleted += () => moduleClient.TimeOut();
                 moduleClient.Display = client.Display;
                 moduleClient.LoadedModules = client.LoadedModules;
                 moduleClient.Type = ClientType.Module;
