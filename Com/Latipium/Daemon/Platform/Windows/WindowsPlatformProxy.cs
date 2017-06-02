@@ -138,154 +138,164 @@ namespace Com.Latipium.Daemon.Platform.Windows {
         }
 
         public Process Start(ProcessStartInfo psi, DisplayDetectData display) {
-            /*
-             * Doesn't support:
-             * psi.Domain
-             * psi.ErrorDialog
-             * psi.ErrorDialogParentHandle
-             * psi.LoadUserProfile
-             * psi.Password
-             * psi.RedirectStandardError
-             * psi.RedirectStandardInput
-             * psi.RedirectStandardOutput
-             * psi.StandardErrorEncoding
-             * psi.StandardInputEncoding
-             * psi.StandardOutputEncoding
-             * psi.UserName
-             * psi.UseShellExecute
-             * psi.Verb
-             * psi.Verbs
-             */
-            IntPtr accessToken = AccessToken;
-            if (accessToken != IntPtr.Zero) {
-                try {
-                    STARTUPINFO startInfo = new STARTUPINFO() {
-                        cb = (uint) Marshal.SizeOf(typeof(STARTUPINFO)),
-                        lpDesktop = "winsta0\\default",
-                        dwFlags = STARTF_USESHOWWINDOW
-                    };
-                    switch (psi.WindowStyle) {
-                        case ProcessWindowStyle.Hidden:
-                            startInfo.wShowWindow = SW_HIDE;
-                            break;
-                        case ProcessWindowStyle.Maximized:
-                            startInfo.wShowWindow = SW_MAXIMIZE;
-                            break;
-                        case ProcessWindowStyle.Minimized:
-                            startInfo.wShowWindow = SW_MINIMIZE;
-                            break;
-                        case ProcessWindowStyle.Normal:
-                            startInfo.wShowWindow = SW_SHOWNORMAL;
-                            break;
-                        default:
-                            startInfo.dwFlags ^= STARTF_USESHOWWINDOW;
-                            break;
-                    }
-                    PROCESS_INFORMATION procInfo;
-                    string monoExe = Type.GetType("Mono.Runtime") == null ? null : Environment.GetEnvironmentVariable("_");
-                    IEnumerable<byte[]> envVars = psi.EnvironmentVariables.Cast<DictionaryEntry>().Select(e => Encoding.Unicode.GetBytes(string.Concat(e.Key.ToString(), "=", e.Value.ToString())));
-                    int len = envVars.Select(e => e.Length + 2).Sum() + 2;
-                    IntPtr environ = Marshal.AllocHGlobal(len);
+            if (IsService) {
+                /*
+                 * Doesn't support:
+                 * psi.Domain
+                 * psi.ErrorDialog
+                 * psi.ErrorDialogParentHandle
+                 * psi.LoadUserProfile
+                 * psi.Password
+                 * psi.RedirectStandardError
+                 * psi.RedirectStandardInput
+                 * psi.RedirectStandardOutput
+                 * psi.StandardErrorEncoding
+                 * psi.StandardInputEncoding
+                 * psi.StandardOutputEncoding
+                 * psi.UserName
+                 * psi.UseShellExecute
+                 * psi.Verb
+                 * psi.Verbs
+                 */
+                IntPtr accessToken = AccessToken;
+                if (accessToken != IntPtr.Zero) {
                     try {
-                        IntPtr it = environ;
-                        foreach (byte[] var in envVars) {
-                            foreach (byte b in var) {
-                                Marshal.WriteByte(it, b);
-                                it = IntPtr.Add(it, 1);
+                        STARTUPINFO startInfo = new STARTUPINFO() {
+                            cb = (uint) Marshal.SizeOf(typeof(STARTUPINFO)),
+                            lpDesktop = "winsta0\\default",
+                            dwFlags = STARTF_USESHOWWINDOW
+                        };
+                        switch (psi.WindowStyle) {
+                            case ProcessWindowStyle.Hidden:
+                                startInfo.wShowWindow = SW_HIDE;
+                                break;
+                            case ProcessWindowStyle.Maximized:
+                                startInfo.wShowWindow = SW_MAXIMIZE;
+                                break;
+                            case ProcessWindowStyle.Minimized:
+                                startInfo.wShowWindow = SW_MINIMIZE;
+                                break;
+                            case ProcessWindowStyle.Normal:
+                                startInfo.wShowWindow = SW_SHOWNORMAL;
+                                break;
+                            default:
+                                startInfo.dwFlags ^= STARTF_USESHOWWINDOW;
+                                break;
+                        }
+                        PROCESS_INFORMATION procInfo;
+                        string monoExe = Type.GetType("Mono.Runtime") == null ? null : Environment.GetEnvironmentVariable("_");
+                        IEnumerable<byte[]> envVars = psi.EnvironmentVariables.Cast<DictionaryEntry>().Select(e => Encoding.Unicode.GetBytes(string.Concat(e.Key.ToString(), "=", e.Value.ToString())));
+                        int len = envVars.Select(e => e.Length + 2).Sum() + 2;
+                        IntPtr environ = Marshal.AllocHGlobal(len);
+                        try {
+                            IntPtr it = environ;
+                            foreach (byte[] var in envVars) {
+                                foreach (byte b in var) {
+                                    Marshal.WriteByte(it, b);
+                                    it = IntPtr.Add(it, 1);
+                                }
+                                Marshal.WriteInt16(it, 0);
+                                it = IntPtr.Add(it, 2);
                             }
                             Marshal.WriteInt16(it, 0);
-                            it = IntPtr.Add(it, 2);
-                        }
-                        Marshal.WriteInt16(it, 0);
-                        SECURITY_ATTRIBUTES procSec = new SECURITY_ATTRIBUTES();
-                        SECURITY_ATTRIBUTES threadSec = new SECURITY_ATTRIBUTES();
-                        procSec.nLength = Marshal.SizeOf(procSec);
-                        threadSec.nLength = Marshal.SizeOf(threadSec);
-                        if (CreateProcessAsUser(accessToken, null, string.Concat(monoExe == null ? string.Concat("\"", EscapeProcessParameter(psi.FileName), "\" ") :
-                            string.Concat("\"", EscapeProcessParameter(monoExe), "\" \"", EscapeProcessParameter(psi.FileName), "\" "), psi.Arguments), ref procSec, ref threadSec,
-                            false, CREATE_UNICODE_ENVIRONMENT | (psi.CreateNoWindow ? CREATE_NO_WINDOW : 0), environ, psi.WorkingDirectory, ref startInfo, out procInfo)) {
-                            CloseHandle(procInfo.hThread);
-                            try {
-                                Process proc = new Process();
-                                proc.StartInfo = psi;
-                                Type Process = typeof(Process);
-                                MethodInfo SetProcessHandle = Process.GetMethod("SetProcessHandle", BindingFlags.NonPublic | BindingFlags.Instance);
-                                if (SetProcessHandle == null) {
-                                    WindowsService.WriteLog("Unable to find System.Diagnostics.Process.SetProcessHandle(Microsoft.Win32.SafeHandles.SafeProcessHandle)");
-                                } else {
-                                    ConstructorInfo ctor = SetProcessHandle.GetParameters()[0].ParameterType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(IntPtr) }, null);
-                                    if (ctor == null) {
-                                        WindowsService.WriteLog("Unable to find Microsoft.Win32.SafeHandles.SafeProcessHandle.SafeProcessHandle(IntPtr)");
+                            SECURITY_ATTRIBUTES procSec = new SECURITY_ATTRIBUTES();
+                            SECURITY_ATTRIBUTES threadSec = new SECURITY_ATTRIBUTES();
+                            procSec.nLength = Marshal.SizeOf(procSec);
+                            threadSec.nLength = Marshal.SizeOf(threadSec);
+                            if (CreateProcessAsUser(accessToken, null, string.Concat(monoExe == null ? string.Concat("\"", EscapeProcessParameter(psi.FileName), "\" ") :
+                                string.Concat("\"", EscapeProcessParameter(monoExe), "\" \"", EscapeProcessParameter(psi.FileName), "\" "), psi.Arguments), ref procSec, ref threadSec,
+                                false, CREATE_UNICODE_ENVIRONMENT | (psi.CreateNoWindow ? CREATE_NO_WINDOW : 0), environ, psi.WorkingDirectory, ref startInfo, out procInfo)) {
+                                CloseHandle(procInfo.hThread);
+                                try {
+                                    Process proc = new Process();
+                                    proc.StartInfo = psi;
+                                    Type Process = typeof(Process);
+                                    MethodInfo SetProcessHandle = Process.GetMethod("SetProcessHandle", BindingFlags.NonPublic | BindingFlags.Instance);
+                                    if (SetProcessHandle == null) {
+                                        WindowsService.WriteLog("Unable to find System.Diagnostics.Process.SetProcessHandle(Microsoft.Win32.SafeHandles.SafeProcessHandle)");
                                     } else {
-                                        object procHandle = ctor.Invoke(new object[] { procInfo.hProcess });
-                                        SetProcessHandle.Invoke(proc, new[] { procHandle });
-                                        MethodInfo SetProcessId = Process.GetMethod("SetProcessId", BindingFlags.NonPublic | BindingFlags.Instance);
-                                        if (SetProcessId == null) {
-                                            WindowsService.WriteLog("Unable to find System.Diagnostics.Process.SetProcessId(int)");
+                                        ConstructorInfo ctor = SetProcessHandle.GetParameters()[0].ParameterType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new [] { typeof(IntPtr) }, null);
+                                        if (ctor == null) {
+                                            WindowsService.WriteLog("Unable to find Microsoft.Win32.SafeHandles.SafeProcessHandle.SafeProcessHandle(IntPtr)");
                                         } else {
-                                            SetProcessId.Invoke(proc, new object[] { (int) procInfo.dwProcessId });
-                                            return proc;
+                                            object procHandle = ctor.Invoke(new object[] { procInfo.hProcess });
+                                            SetProcessHandle.Invoke(proc, new [] { procHandle });
+                                            MethodInfo SetProcessId = Process.GetMethod("SetProcessId", BindingFlags.NonPublic | BindingFlags.Instance);
+                                            if (SetProcessId == null) {
+                                                WindowsService.WriteLog("Unable to find System.Diagnostics.Process.SetProcessId(int)");
+                                            } else {
+                                                SetProcessId.Invoke(proc, new object[] { (int) procInfo.dwProcessId });
+                                                return proc;
+                                            }
                                         }
                                     }
+                                } catch (Exception ex) {
+                                    WindowsService.WriteLog(ex);
                                 }
-                            } catch (Exception ex) {
-                                WindowsService.WriteLog(ex);
+                                CloseHandle(procInfo.hProcess);
+                                return Process.GetProcessById((int)procInfo.dwProcessId);
+                            } else {
+                                Error("CreateProcessAsUser");
+                                return null;
                             }
-                            CloseHandle(procInfo.hProcess);
-                            return Process.GetProcessById((int) procInfo.dwProcessId);
-                        } else {
-                            Error("CreateProcessAsUser");
-                            return null;
+                        } finally {
+                            Marshal.FreeHGlobal(environ);
                         }
                     } finally {
-                        Marshal.FreeHGlobal(environ);
+                        CloseHandle(accessToken);
+                    }
+                }
+                return null;
+            } else {
+                return Process.Start(psi);
+            }
+        }
+
+        public string FindLatipiumDir(string user) {
+            if (IsService) {
+                IntPtr accessToken = AccessToken;
+                try {
+                    IntPtr path;
+                    uint error = SHGetKnownFolderPath(KNOWNFOLDERID.RoamingAppData, 0, accessToken, out path);
+                    switch (error) {
+                        case S_OK:
+                            try {
+                                string dir = Path.Combine(Marshal.PtrToStringAuto(path), "latipium");
+                                Directory.CreateDirectory(dir);
+                                string username;
+                                string domain;
+                                if (GetUser(accessToken, out username, out domain)) {
+                                    NTAccount account = new NTAccount(domain, username);
+                                    DirectorySecurity acl = Directory.GetAccessControl(dir);
+                                    if (!acl.GetAccessRules(true, true, typeof(NTAccount)).OfType<FileSystemAccessRule>()
+                                        .Any(r => r.IdentityReference == account && r.FileSystemRights == FileSystemRights.FullControl && r.AccessControlType == AccessControlType.Allow)) {
+                                        acl.AddAccessRule(new FileSystemAccessRule(account, FileSystemRights.FullControl, AccessControlType.Allow));
+                                    }
+                                    Directory.SetAccessControl(dir, acl);
+                                }
+                                return dir;
+                            } finally {
+                                Marshal.FreeCoTaskMem(path);
+                            }
+                        case E_FAIL:
+                            WindowsService.WriteLog("Error in SHGetKnownFolderPath: Unspecified failure (2147500037)");
+                            break;
+                        case E_INVALIDARG:
+                            WindowsService.WriteLog("Error in SHGetKnownFolderPath: One or more arguments are not valid (2147942487)");
+                            break;
+                        default:
+                            WindowsService.WriteLog(string.Format("Error in SHGetKnownFolderPath: ({0})", error));
+                            break;
                     }
                 } finally {
                     CloseHandle(accessToken);
                 }
+                return null;
+            } else {
+                string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "latipium");
+                Directory.CreateDirectory(dir);
+                return dir;
             }
-            return null;
-        }
-
-        public string FindLatipiumDir(string user) {
-            IntPtr accessToken = AccessToken;
-            try {
-                IntPtr path;
-                uint error = SHGetKnownFolderPath(KNOWNFOLDERID.RoamingAppData, 0, accessToken, out path);
-                switch (error) {
-                    case S_OK:
-                        try {
-                            string dir = Path.Combine(Marshal.PtrToStringAuto(path), "latipium");
-                            Directory.CreateDirectory(dir);
-                            string username;
-                            string domain;
-                            if (GetUser(accessToken, out username, out domain)) {
-                                NTAccount account = new NTAccount(domain, username);
-                                DirectorySecurity acl = Directory.GetAccessControl(dir);
-                                if (!acl.GetAccessRules(true, true, typeof(NTAccount)).OfType<FileSystemAccessRule>()
-                                    .Any(r => r.IdentityReference == account && r.FileSystemRights == FileSystemRights.FullControl && r.AccessControlType == AccessControlType.Allow)) {
-                                    acl.AddAccessRule(new FileSystemAccessRule(account, FileSystemRights.FullControl, AccessControlType.Allow));
-                                }
-                                Directory.SetAccessControl(dir, acl);
-                            }
-                            return dir;
-                        } finally {
-                            Marshal.FreeCoTaskMem(path);
-                        }
-                    case E_FAIL:
-                        WindowsService.WriteLog("Error in SHGetKnownFolderPath: Unspecified failure (2147500037)");
-                        break;
-                    case E_INVALIDARG:
-                        WindowsService.WriteLog("Error in SHGetKnownFolderPath: One or more arguments are not valid (2147942487)");
-                        break;
-                    default:
-                        WindowsService.WriteLog(string.Format("Error in SHGetKnownFolderPath: ({0})", error));
-                        break;
-                }
-            } finally {
-                CloseHandle(accessToken);
-            }
-            return null;
         }
     }
 }
