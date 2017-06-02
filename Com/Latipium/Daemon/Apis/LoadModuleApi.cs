@@ -92,10 +92,8 @@ namespace Com.Latipium.Daemon.Apis {
                 moduleClient.Display = client.Display;
                 moduleClient.LoadedModules = client.LoadedModules;
                 moduleClient.Type = ClientType.Module;
-                psi.Arguments = string.Concat("\"", Server.BaseUrl, "\" ", moduleClient.Id.ToString());
-                UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-                psi.EnvironmentVariables["PATH"] = string.Concat(Path.GetDirectoryName(Uri.UnescapeDataString(uri.Path)), ";", Environment.GetEnvironmentVariable("PATH"));
-                psi.FileName = exes.First();
+                psi.Arguments = string.Concat("WRAPPER_NUGET=true -- \"", exes.First(), "\" \"", Server.BaseUrl, "\" ", moduleClient.Id.ToString());
+                psi.FileName = Path.Combine(Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path)), "command-wrapper.exe");
                 psi.WorkingDirectory = client.LatipiumDir;
                 Process proc = PlatformFactory.Proxy.Start(psi, client.Display);
                 proc.Exited += (sender, e) => {
