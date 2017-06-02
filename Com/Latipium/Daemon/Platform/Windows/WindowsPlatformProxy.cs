@@ -272,7 +272,6 @@ namespace Com.Latipium.Daemon.Platform.Windows {
                         } finally {
                             Marshal.FreeCoTaskMem(path);
                         }
-                        break;
                     case E_FAIL:
                         WindowsService.WriteLog("Error in SHGetKnownFolderPath: Unspecified failure (2147500037)");
                         break;
