@@ -40,8 +40,37 @@ using Com.Latipium.Daemon.Model;
 
 namespace Com.Latipium.Daemon {
     public class DaemonWebServer : IDisposable {
-        private const string DefaultUrl = "http://+:43475/";
+        private const string DefaultUrl = "http://localhost:43475/";
         private const int MaxReceiveSize = 8192;
+        private static readonly string[] AuthorizedOrigins = new [] {
+            "https://latipium.com",
+            "https://www.latipium.com",
+            "http://localhost",
+            "http://localhost:4000",
+            "http://debug.latipium.com",
+            "http://debug.latipium.com:4000"
+        };
+        private static readonly string[] AuthorizedHosts = new [] {
+            "latipium.com",
+            "www.latipium.com",
+            "localhost",
+            "debug.latipium.com"
+        };
+        private static readonly string[] AuthorizedHeaders = new [] {
+            "DNT",
+            "Keep-Alive",
+            "User-Agent",
+            "X-Requested-With",
+            "If-Modified-Since",
+            "Cache-Control",
+            "Content-Type",
+            "X-Latipium-Client-Id"
+        };
+        private static readonly string[] AuthorizedMethods = new[] {
+            "GET",
+            "POST",
+            "OPTIONS"
+        };
         private HttpListener Listener;
         private Dictionary<string, IApi> Apis;
         private Dictionary<Guid, ApiClient> Clients;
@@ -167,16 +196,43 @@ namespace Com.Latipium.Daemon {
                     wsctx.WebSocket.ReceiveAsync(buffer, CancellationTokenSource.Token).ContinueWith(task => WebsocketRead(task, wsctx.WebSocket, buffer, null));
 #pragma warning restore 4014
                 } else {
-                    string request;
-                    using (TextReader reader = new StreamReader(ctx.Request.InputStream)) {
-                        request = reader.ReadToEnd();
-                    }
-                    Guid clientId = Guid.Empty;
-                    Guid.TryParse(ctx.Request.Headers["X-Latipium-Client-Id"] ?? "", out clientId);
-                    string response = Handle(ctx.Request.Url.AbsolutePath.Replace("//", "/"), request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
-                    ctx.Response.ContentType = "application/json";
-                    using (TextWriter writer = new StreamWriter(ctx.Response.OutputStream)) {
-                        writer.Write(response);
+                    string tmp;
+                    if (ctx.Request.UrlReferrer != null && AuthorizedHosts.Contains(ctx.Request.UrlReferrer.Host.ToLower())) {
+                        if (!string.IsNullOrWhiteSpace(tmp = ctx.Request.Headers["Origin"])) {
+                            if (AuthorizedOrigins.Contains(tmp)) {
+                                ctx.Response.AddHeader("Access-Control-Allow-Origin", tmp);
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(tmp = ctx.Request.Headers["Access-Control-Request-Headers"])) {
+                            ctx.Response.AddHeader("Access-Control-Allow-Headers", tmp.Split(new [] { ", ", "," }, StringSplitOptions.RemoveEmptyEntries)
+                                .Where(h => AuthorizedHeaders.Any(i => h.ToLower() == i.ToLower()))
+                                .Aggregate((a, b) => string.Concat(a, ",", b)));
+                        }
+                        if (!string.IsNullOrWhiteSpace(tmp = ctx.Request.Headers["Access-Control-Request-Method"])) {
+                            if (AuthorizedMethods.Contains(tmp.ToUpper())) {
+                                ctx.Response.AddHeader("Access-Control-Allow-Methods", tmp);
+                            }
+                        }
+                        ctx.Response.AddHeader("Access-Control-Max-Age", "600");
+                        if (ctx.Request.HttpMethod.ToUpper() != "OPTIONS") {
+                            string request;
+                            using (TextReader reader = new StreamReader(ctx.Request.InputStream)) {
+                                request = reader.ReadToEnd();
+                            }
+                            Guid clientId = Guid.Empty;
+                            Guid.TryParse(ctx.Request.Headers["X-Latipium-Client-Id"] ?? "", out clientId);
+                            string response = Handle(ctx.Request.Url.AbsolutePath.Replace("//", "/"), request, Clients.ContainsKey(clientId) ? Clients[clientId].Ping() : null);
+                            ctx.Response.ContentType = "application/json";
+                            using (TextWriter writer = new StreamWriter(ctx.Response.OutputStream)) {
+                                writer.Write(response);
+                            }
+                        }
+                    } else {
+                        ctx.Response.StatusCode = 403;
+                        ctx.Response.StatusDescription = "Forbidden";
+                        if (ctx.Request.UrlReferrer != null) {
+                            WindowsService.WriteLog(string.Format("Request with invalid referrer '{0}'", ctx.Request.UrlReferrer));
+                        }
                     }
                     ctx.Response.Close();
                 }
