@@ -6,8 +6,8 @@
     <LatipiumTarget>Executable</LatipiumTarget>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Custom" name="Authorize CI" command="$(SolutionDir)/packages/CommandWrapper.1.6/bin/command-wrapper.exe MONO_PATH=$(SolutionDir)/packages/CommandLineParser.1.9.71/lib/net45/:$(SolutionDir)/packages/GitSharp.0.3/lib/:$(SolutionDir)/packages/log4net.2.0.5/lib/net45-full/:$(SolutionDir)/packages/Microsoft.Web.Xdt.2.1.1/lib/net40/:$(SolutionDir)/packages/Newtonsoft.Json.9.0.1/lib/net45/:$(SolutionDir)/packages/NuGet.Core.2.12.0/lib/net40-Client/:$(SolutionDir)/packages/SharpZipLib.0.86.0/lib/20/:$(SolutionDir)/packages/Tamir.SharpSSH.1.1.1.13/lib/:$(SolutionDir)/packages/Winterdom.IO.FileMap.2.0.2.0/lib/:$(SolutionDir)/packages/BouncyCastle.1.8.1/lib/:$(SolutionDir)/packages/YamlDotNet.4.0.0/lib/net35/ PATH=$(SolutionDir)/packages/CommandLineParser.1.9.71/lib/net45/;$(SolutionDir)/packages/GitSharp.0.3/lib/;$(SolutionDir)/packages/log4net.2.0.5/lib/net45-full/;$(SolutionDir)/packages/Microsoft.Web.Xdt.2.1.1/lib/net40/;$(SolutionDir)/packages/Newtonsoft.Json.9.0.1/lib/net45/;$(SolutionDir)/packages/NuGet.Core.2.12.0/lib/net40-Client/;$(SolutionDir)/packages/SharpZipLib.0.86.0/lib/20/;$(SolutionDir)/packages/Tamir.SharpSSH.1.1.1.13/lib/;$(SolutionDir)/packages/Winterdom.IO.FileMap.2.0.2.0/lib/;$(SolutionDir)/packages/BouncyCastle.1.8.1/lib/;$(SolutionDir)/packages/YamlDotNet.4.0.0/lib/net35/ WRAPPER_ASK=3 -- $(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/bin/Com.Latipium.DevTools.exe authorize -C $(ProjectDir) Please__enter__your__NuGet.org__API__key:" workingdir="$(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/" />
-        <Command type="Custom" name="Refactor Template" command="$(SolutionDir)/packages/CommandWrapper.1.6/bin/command-wrapper.exe MONO_PATH=$(SolutionDir)/packages/CommandLineParser.1.9.71/lib/net45/:$(SolutionDir)/packages/GitSharp.0.3/lib/:$(SolutionDir)/packages/log4net.2.0.5/lib/net45-full/:$(SolutionDir)/packages/Microsoft.Web.Xdt.2.1.1/lib/net40/:$(SolutionDir)/packages/Newtonsoft.Json.9.0.1/lib/net45/:$(SolutionDir)/packages/NuGet.Core.2.12.0/lib/net40-Client/:$(SolutionDir)/packages/SharpZipLib.0.86.0/lib/20/:$(SolutionDir)/packages/Tamir.SharpSSH.1.1.1.13/lib/:$(SolutionDir)/packages/Winterdom.IO.FileMap.2.0.2.0/lib/:$(SolutionDir)/packages/BouncyCastle.1.8.1/lib/:$(SolutionDir)/packages/YamlDotNet.4.0.0/lib/net35/ PATH=$(SolutionDir)/packages/CommandLineParser.1.9.71/lib/net45/;$(SolutionDir)/packages/GitSharp.0.3/lib/;$(SolutionDir)/packages/log4net.2.0.5/lib/net45-full/;$(SolutionDir)/packages/Microsoft.Web.Xdt.2.1.1/lib/net40/;$(SolutionDir)/packages/Newtonsoft.Json.9.0.1/lib/net45/;$(SolutionDir)/packages/NuGet.Core.2.12.0/lib/net40-Client/;$(SolutionDir)/packages/SharpZipLib.0.86.0/lib/20/;$(SolutionDir)/packages/Tamir.SharpSSH.1.1.1.13/lib/;$(SolutionDir)/packages/Winterdom.IO.FileMap.2.0.2.0/lib/;$(SolutionDir)/packages/BouncyCastle.1.8.1/lib/;$(SolutionDir)/packages/YamlDotNet.4.0.0/lib/net35/ WRAPPER_ASK=4,6 -- $(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/bin/Com.Latipium.DevTools.exe refactor -C $(ProjectDir) -n What__is__the__root__namespace__of__the__project? -t What__is__the__title__of__the__project?" workingdir="$(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/" />
+        <Command type="Custom" name="Authorize CI" command="$(SolutionDir)/packages/CommandWrapper.2.2/bin/command-wrapper.exe WRAPPER_NUGET=true WRAPPER_ASK=3 -- $(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/bin/Com.Latipium.DevTools.exe authorize -C $(ProjectDir) Please__enter__your__NuGet.org__API__key:" workingdir="$(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/" />
+        <Command type="Custom" name="Refactor Template" command="$(SolutionDir)/packages/CommandWrapper.2.2/bin/command-wrapper.exe WRAPPER_NUGET=true WRAPPER_ASK=4,6 -- $(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/bin/Com.Latipium.DevTools.exe refactor -C $(ProjectDir) -n What__is__the__root__namespace__of__the__project? -t What__is__the__title__of__the__project?" workingdir="$(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/" />
       </CustomCommands>
     </CustomCommands>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -51,9 +51,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Com.Latipium.Daemon.Api, Version=0.0.50.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\Com.Latipium.Daemon.Api.0.0.50.2\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
-    </Reference>
     <Reference Include="command-wrapper">
       <HintPath>$(SolutionDir)\packages\CommandWrapper.2.2\bin\command-wrapper.exe</HintPath>
     </Reference>
@@ -69,6 +66,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Com.Latipium.Daemon.Api">
+      <HintPath>$(SolutionDir)\packages\Com.Latipium.Daemon.Api.0.0.56.2\lib\net45\Com.Latipium.Daemon.Api.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -53,7 +53,7 @@
     </PropertyGroup>
     
     <!-- Custom targets -->
-    <UsingTask TaskName="Com.GitHub.ZachDeibert.CommandWrapper.CommandTask" AssemblyFile="$(SolutionDir)/packages/CommandWrapper.2.1/bin/command-wrapper.exe" />
+    <UsingTask TaskName="Com.GitHub.ZachDeibert.CommandWrapper.CommandTask" AssemblyFile="$(SolutionDir)/packages/CommandWrapper.2.2/bin/command-wrapper.exe" />
     <Target Name="CalculateVersion" BeforeTargets="CoreCompile">
         <CommandTask Command="WRAPPER_NUGET=true -- '$(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/bin/Com.Latipium.DevTools.exe' version -C '$(ProjectDir)' AssemblyVersion.cs" WorkingDirectory="$(SolutionDir)/packages/Com.Latipium.DevTools.1.2.2.2/" />
     </Target>
