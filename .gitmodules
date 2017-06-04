@@ -7,3 +7,6 @@
 [submodule "modules/test"]
 	path = modules/test
 	url = https://github.com/latipium/daemon-test.git
+[submodule "modules/package-manager"]
+	path = modules/package-manager
+	url = https://github.com/latipium/daemon-package-manager.git
