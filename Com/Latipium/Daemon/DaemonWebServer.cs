@@ -197,7 +197,7 @@ namespace Com.Latipium.Daemon {
 #pragma warning restore 4014
                 } else {
                     string tmp;
-                    if (ctx.Request.UrlReferrer != null && AuthorizedHosts.Contains(ctx.Request.UrlReferrer.Host.ToLower())) {
+                    if ((ctx.Request.UrlReferrer != null && AuthorizedHosts.Contains(ctx.Request.UrlReferrer.Host.ToLower())) || ctx.Request.UserAgent == "Latipium Daemon (https://github.com/latipium/daemon)") {
                         if (!string.IsNullOrWhiteSpace(tmp = ctx.Request.Headers["Origin"])) {
                             if (AuthorizedOrigins.Contains(tmp)) {
                                 ctx.Response.AddHeader("Access-Control-Allow-Origin", tmp);
